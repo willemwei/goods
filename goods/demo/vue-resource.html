@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="../node_modules/vue/dist/vue.js"></script>
+  <script src="../node_modules/vue-resource/dist/vue-resource.js"></script>
+  <script src="../node_modules/axios/dist/axios.js"></script>
+</head>
+<body>
+<div id="app" class="container">
+  <h1>vue-resource</h1>
+  <a href="javascript:;" class="btn btn-primary" @click="get">Get请求</a>
+  <a href="javascript:;" class="btn btn-warning" @click="post">Post请求</a>
+  <a href="javascript:;" class="btn btn-danger" @click="jsonp">JSONP请求</a>
+  <a href="javascript:;" class="btn btn-danger" @click="http">Http请求</a>
+  <div class="row">{{ info }}</div>
+</div>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      info: ''
+    },
+    mounted () {
+      // 全局拦截器
+      Vue.http.interceptors.push((request, next) => {
+        console.log('request init.');
+        next((response) => {
+          console.log('response init.');
+          return response;
+        });
+      });
+    },
+    http: {
+      root: '../src/'
+    },
+    methods: {
+      get () {
+        this.$http.get('main.js', {
+          params: {
+            userId: '101'
+          }
+        }).then(res => {
+          this.info = res.data;
+        }, (err) => {
+          this.info = err;
+        });
+      },
+      post () {
+        this.$http.post('App.vue', {
+          userId: 'weish'
+        }, {
+          headers: {
+            access_token: 'abc'
+          }
+        }).then((res) => {
+          this.info = 'post:' + res.data;
+        });
+      },
+      jsonp () {
+        this.$http.jsonp('main.js', (res) => {
+          this.info = res.data;
+        });
+      },
+      http () {
+        this.$http({
+          url: 'App.vue',
+          params: {
+            userId: 111
+          },
+          headers: {
+            token: '123'
+          },
+          timeout: 5,
+          before () {
+            console.log('before');
+          }
+        }).then((res) => {
+          this.info = res.data;
+        });
+      }
+    }
+  });
+</script>
+</body>
+</html>

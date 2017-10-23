@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="../node_modules/vue/dist/vue.js"></script>
+  <script src="../node_modules/axios/dist/axios.js"></script>
+  <style>
+    .row #app {
+      margin-top: 20px;
+      width: 400px;
+      height: 100px;
+      background-color: #f1ad4e;
+    }
+
+    .loading {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      margin-top: -50px;
+      margin-left: -50px;
+      border-radius: 50%;
+      width: 100px;
+      height: 100px;
+      font-size: 16px;
+      text-align: center;
+      line-height: 100px;
+      color: #fff;
+      background-color: #d8534f;
+    }
+  </style>
+</head>
+<body>
+<div id="app" class="container">
+  <h1>axios</h1>
+  <a href="javascript:;" class="btn btn-primary" @click="get">Get请求</a>
+  <a href="javascript:;" class="btn btn-warning" @click="post">Post请求</a>
+  <a href="javascript:;" class="btn btn-danger" @click="http">Http请求</a>
+  <div class="row" v-html="info"></div>
+  <div class="loading" v-show="load">loading</div>
+</div>
+<script>
+  new Vue({
+    el: '#app',
+    data: {
+      info: '',
+      load: false
+    },
+    mounted () {
+      axios.interceptors.request.use((config) => {
+        console.log('request init.');
+        this.load = true;
+        return config;
+      });
+
+      axios.interceptors.response.use((response) => {
+        console.log('response init.');
+        this.load = false;
+        return response;
+      });
+    },
+    methods: {
+      get () {
+        axios.get('../index.html', {
+          params: {
+            userId: 999
+          }
+        }).then((res) => {
+          this.info = res.data;
+        }).catch(err => {
+          this.info = err;
+        });
+      },
+      post () {
+        axios.post('../package.json', {
+          userId: 111
+        }).then((res) => {
+          this.info = res.data;
+        }).catch((err) => {
+          this.info = err;
+        });
+      },
+      http () {
+        axios({
+          url: '../README.md',
+          method: 'post',
+          data: {
+            userId: '100'
+          },
+          params: {
+            userId: '101'
+          }
+        }).then(res => {
+          this.info = res.data;
+        });
+      }
+    }
+  });
+</script>
+</body>
+</html>

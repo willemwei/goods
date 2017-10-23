@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>ES6 demo</title>
+</head>
+<body>
+<script>
+  let sum = (...param) => {
+    let s = 0;
+    param.forEach((item) => {
+      s += item;
+    });
+    console.log(s);
+  };
+  sum(4, 2, 8);
+
+  /* Promise */
+  let checkLogin = () => {
+    return new Promise((resolve, reject) => {
+      let userInfo = {
+        userId: '827'
+      };
+
+      resolve(userInfo);
+    });
+  };
+
+  let getName = () => {
+    return new Promise((resolve, reject) => {
+      let userInfo = {
+        userName: 'weish'
+      };
+
+      resolve(userInfo);
+    });
+  };
+
+  checkLogin().then((res) => {
+    return res;
+  }).catch((err) => {
+    console.log(err);
+  }).then((res) => {
+    console.log(res.userId);
+  });
+
+  Promise.all([checkLogin(), getName()]).then(([res1, res2]) => {
+    console.log(res1, res2);
+  });
+</script>
+</body>
+</html>
