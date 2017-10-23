@@ -1,24 +1,24 @@
 <template>
   <div id="app">
-    <router-view/>
-    <router-view name="title"></router-view>
-    <router-view name="img"></router-view>
+    <v-header></v-header>
+    <keep-alive>
+      <router-view/>
+    </keep-alive>
+    <v-footer></v-footer>
   </div>
 </template>
 
-<script>
+<script type="text/ecmascript-6">
+  import Header from '@/components/header/header';
+  import Footer from '@/components/footer/footer';
+
   export default {
-    name: 'app'
+    components: {
+      'v-header': Header,
+      'v-footer': Footer
+    }
   };
 </script>
 
-<style>
-  #app {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    margin-top: 60px;
-  }
+<style lang="less" scoped>
 </style>

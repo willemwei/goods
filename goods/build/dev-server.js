@@ -22,6 +22,17 @@ const autoOpenBrowser = !!config.dev.autoOpenBrowser
 const proxyTable = config.dev.proxyTable
 
 const app = express()
+
+// 模拟数据
+const router = express.Router();
+const goodsData = require('../mock/goods.json');
+
+router.get('/goods', (req, res, next) => {
+  res.json(goodsData);
+});
+
+app.use('/api', router);
+
 const compiler = webpack(webpackConfig)
 
 const devMiddleware = require('webpack-dev-middleware')(compiler, {

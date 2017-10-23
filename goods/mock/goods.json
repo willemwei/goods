@@ -1,0 +1,30 @@
+{
+  "status": "0",
+  "msg": "",
+  "result": [
+    {
+      "productId": "100001",
+      "productName": "小米3",
+      "productPrice": "2499",
+      "productImg": "http://iph.href.lu/400x400?text=%E5%8D%A0%E4%BD%8D%E5%9B%BE"
+    },
+    {
+      "productId": "100001",
+      "productName": "小米4",
+      "productPrice": "2499",
+      "productImg": "http://iph.href.lu/400x400?text=%E5%8D%A0%E4%BD%8D%E5%9B%BE"
+    },
+    {
+      "productId": "100001",
+      "productName": "小米5",
+      "productPrice": "2499",
+      "productImg": "http://iph.href.lu/400x400?text=%E5%8D%A0%E4%BD%8D%E5%9B%BE"
+    },
+    {
+      "productId": "100001",
+      "productName": "小米6",
+      "productPrice": "2499",
+      "productImg": "http://iph.href.lu/400x400?text=%E5%8D%A0%E4%BD%8D%E5%9B%BE"
+    }
+  ]
+}
