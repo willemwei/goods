@@ -4,23 +4,29 @@
     <div class="w1260">
       <div class="sort-wrapper">
         <span>排序方式：</span>
-        <a href="javascript: void(0)">默认排序</a>
-        <a href="javascript: void(0)">价格<i class="icon-price"></i></a>
+        <a href="#" @click.prevent="sortCh(0)" :class="{'active': sortType === 0}">默认排序</a>
+        <a href="#" @click.prevent="sortCh(sortType===0?-1:sortType)"
+           :class="{'active': sortType !== 0, 'desc-bottom': sortType === 2}">
+          价格<i class="icon-price"></i></a>
       </div>
       <div class="goods-wrapper">
         <dl class="price-list">
           <dt class="title">价格区间：</dt>
-          <dd class="item active">ALL</dd>
-          <dd class="item">0.00 - 100.00</dd>
+          <dd class="item" :class="{'active': priceSelect === -1}" @click="priceRing(-1)">ALL</dd>
+          <dd class="item" v-for="(item, index) in priceFilter" @click="priceRing(index)"
+              :class="{'active': index === priceSelect}">
+            {{ item.start.toFixed(2) }} - {{ item.end.toFixed(2) }}
+          </dd>
         </dl>
         <ul class="goods-list">
-          <li class="item"></li>
-          <li class="item"></li>
-          <li class="item"></li>
-          <li class="item"></li>
-          <li class="item"></li>
-          <li class="item"></li>
-          <li class="item"></li>
+          <li class="item" v-for="(item, index) in goodsSort" :key="index">
+            <a href="#" @click.prevent="">
+              <img width="231" height="231" border="0" v-lazy="item.productImg">
+            </a>
+            <b class="name">{{ item.productName }}</b>
+            <span class="price">￥ {{ (item.productPrice * 1).toFixed(2) }}</span>
+            <a class="add-car" href="#" @click.prevent="">加入购物车</a>
+          </li>
         </ul>
       </div>
     </div>
@@ -31,18 +37,86 @@
   import Brumbs from '@/base/crumbs/crumbs';
   import axios from 'axios';
 
+  const SORT_DEFAULT = 0;
+  const SORT_PRICE_UP = 1;
+  const SORT_PRICE_DOWN = 2;
+  const SELECT_ALL = -1;
+
   export default {
-    mounted () {
+    data () {
+      return {
+        goods: [],
+        priceFilter: [
+          {
+            start: 0,
+            end: 1000
+          },
+          {
+            start: 1000,
+            end: 2000
+          },
+          {
+            start: 2000,
+            end: 3000
+          }
+        ],
+        priceSelect: SELECT_ALL,
+        sortType: SORT_DEFAULT
+      };
+    },
+    created () {
       this._getCodeList();
     },
     components: {
       'v-brumbs': Brumbs
     },
     methods: {
+      sortCh (sort) {
+        this.sortType = sort;
+
+        if (this.sortType === -1) {
+          this.sortType = SORT_PRICE_UP;
+        } else if (this.sortType !== SORT_DEFAULT) {
+          this.sortType = this.sortType === SORT_PRICE_UP ? SORT_PRICE_DOWN : SORT_PRICE_UP;
+        }
+      },
+      priceRing (index) {
+        this.priceSelect = index;
+      },
       _getCodeList () {
         axios.get('/api/goods').then((res) => {
-          console.log(res.data);
+          if (res.data.status * 1 === 0) {
+            this.goods = res.data.result;
+          }
         });
+      }
+    },
+    computed: {
+      goodsSort () {
+        let goodsCopy = this.goods.slice();
+
+        if (this.sortType !== SORT_DEFAULT) {
+          goodsCopy.sort((a, b) => {
+            if (a.productPrice > b.productPrice) {
+              return true;
+            }
+          });
+
+          if (this.sortType === SORT_PRICE_DOWN) {
+            goodsCopy.reverse();
+          }
+        }
+
+        if (this.priceSelect !== SELECT_ALL) {
+          let price = this.priceFilter[this.priceSelect];
+          goodsCopy = goodsCopy.filter((item) => {
+            if (item.productPrice < price.end && item.productPrice >= price.start) {
+              return true;
+            }
+          });
+        }
+
+        return goodsCopy;
       }
     }
   };
@@ -84,10 +158,6 @@
 
           &.desc-bottom {
             .icon-price {
-              -webkit-transform: rotate(180deg);
-              -moz-transform: rotate(180deg);
-              -ms-transform: rotate(180deg);
-              -o-transform: rotate(180deg);
               transform: rotate(180deg);
             }
           }
@@ -108,14 +178,13 @@
       }
 
       .goods-wrapper {
-        display: -webkit-box;
-        display: -ms-flexbox;
         display: flex;
         padding-top: 30px;
 
         .price-list {
-          flex: 1;
+          flex: 0 0 230px;
           padding: 0 20px;
+          width: 230px;
           font-size: 14px;
           color: #605f5f;
 
@@ -128,11 +197,8 @@
             margin: 20px 0;
             padding: 5px 0;
             cursor: pointer;
-            -webkit-transition: padding .3s, color .3s;
-            -moz-transition: padding .3s, color .3s;
-            -ms-transition: padding .3s, color .3s;
-            -o-transition: padding .3s, color .3s;
-            transition: padding .3s, color .3s;
+            transition: padding .5s ease-out,
+            color .5s ease-out;
 
             &.active,
             &:hover {
@@ -145,8 +211,7 @@
 
         .goods-list {
           padding: 0;
-          flex: 0 0 985px;
-          width: 985px;
+          flex: 1;
           font-size: 0;
 
           .item {
@@ -157,12 +222,50 @@
             width: 235px;
             height: 400px;
             font-size: 16px;
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
+            background-color: #fff;
             box-sizing: border-box;
+            transition: all .5s ease-out;
 
             &:nth-of-type(4n + 1) {
               margin-left: 0;
+            }
+
+            &:hover {
+              border-color: #ee7a23;
+              transform: translateY(-5px);
+              box-shadow: 0 0 10px #999;
+            }
+
+            .name {
+              display: block;
+              overflow: hidden;
+              margin: 20px 10px 0;
+              height: 4em;
+              font-size: 14px;
+              color: #605f5f;
+            }
+
+            .price {
+              display: block;
+              margin: 0 10px;
+              font-size: 17px;
+              color: #d1434a;
+            }
+
+            .add-car {
+              display: block;
+              border: 1px solid #d1434a;
+              margin: 15px 10px 0;
+              height: 40px;
+              font-weight: 700;
+              text-align: center;
+              line-height: 40px;
+              color: #d1434a;
+              transition: all .5s ease-out;
+
+              &:hover {
+                background-color: #ffe5e6;
+              }
             }
           }
         }

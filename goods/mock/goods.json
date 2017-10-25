@@ -6,25 +6,85 @@
       "productId": "100001",
       "productName": "小米3",
       "productPrice": "2499",
-      "productImg": "http://iph.href.lu/400x400?text=%E5%8D%A0%E4%BD%8D%E5%9B%BE"
+      "productImg": "/static/images/1.jpg"
     },
     {
       "productId": "100001",
       "productName": "小米4",
-      "productPrice": "2499",
-      "productImg": "http://iph.href.lu/400x400?text=%E5%8D%A0%E4%BD%8D%E5%9B%BE"
+      "productPrice": "2399",
+      "productImg": "/static/images/2.jpg"
     },
     {
       "productId": "100001",
       "productName": "小米5",
-      "productPrice": "2499",
-      "productImg": "http://iph.href.lu/400x400?text=%E5%8D%A0%E4%BD%8D%E5%9B%BE"
+      "productPrice": "2699",
+      "productImg": "/static/images/6.jpg"
     },
     {
       "productId": "100001",
       "productName": "小米6",
-      "productPrice": "2499",
-      "productImg": "http://iph.href.lu/400x400?text=%E5%8D%A0%E4%BD%8D%E5%9B%BE"
+      "productPrice": "2199",
+      "productImg": "/static/images/4.jpg"
+    },
+    {
+      "productId": "100001",
+      "productName": "xxx",
+      "productPrice": "1200",
+      "productImg": "/static/images/7.jpg"
+    },
+    {
+      "productId": "100001",
+      "productName": "yyy",
+      "productPrice": "595",
+      "productImg": "/static/images/8.jpg"
+    },
+    {
+      "productId": "100001",
+      "productName": "yyy",
+      "productPrice": "787",
+      "productImg": "/static/images/9.jpg"
+    },
+    {
+      "productId": "100001",
+      "productName": "yyy",
+      "productPrice": "2345",
+      "productImg": "/static/images/10.jpg"
+    },
+    {
+      "productId": "100001",
+      "productName": "zzz",
+      "productPrice": "2567",
+      "productImg": "/static/images/11.jpg"
+    },
+    {
+      "productId": "100001",
+      "productName": "vvv",
+      "productPrice": "2842",
+      "productImg": "/static/images/12.jpg"
+    },
+    {
+      "productId": "100001",
+      "productName": "uuu",
+      "productPrice": "2991",
+      "productImg": "/static/images/13.jpg"
+    },
+    {
+      "productId": "100001",
+      "productName": "jjj",
+      "productPrice": "2471",
+      "productImg": "/static/images/14.jpg"
+    },
+    {
+      "productId": "100001",
+      "productName": "yyy",
+      "productPrice": "4835",
+      "productImg": "http://pic6.huitu.com/res/20130116/84481_20130116142820494200_1.jpg"
+    },
+    {
+      "productId": "100001",
+      "productName": "yyy",
+      "productPrice": "4835",
+      "productImg": "http://img2.imgtn.bdimg.com/it/u=4289577871,2613521315&fm=11&gp=0.jpg"
     }
   ]
 }
