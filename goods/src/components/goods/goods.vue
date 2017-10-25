@@ -25,16 +25,33 @@
             </a>
             <b class="name">{{ item.productName }}</b>
             <span class="price">￥ {{ (item.productPrice * 1).toFixed(2) }}</span>
-            <a class="add-car" href="#" @click.prevent="">加入购物车</a>
+            <a class="add-car" href="#" @click.prevent="shopCar">加入购物车</a>
           </li>
         </ul>
       </div>
     </div>
+    <v-modal class="alert" ref="alert">
+      <p class="desc" slot="content">您当前尚未登录！</p>
+      <div class="btns" slot="footer">
+        <a class="btn" href="#" @click="hideAlert">关闭</a>
+      </div>
+    </v-modal>
+    <v-modal class="confirm" ref="confirm">
+      <div class="desc" slot="content">
+        <i class="icon-check"></i>
+        <span class="text">加入购物车成功！</span>
+      </div>
+      <div class="btns" slot="footer">
+        <a class="btn btn-goon" href="#" @click.prevent="confirmHide">继续购物</a>
+        <a class="btn btn-shopcar" href="#" @click.prevent="goShopcar">查看购物车</a>
+      </div>
+    </v-modal>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import Brumbs from '@/base/crumbs/crumbs';
+  import Modal from '@/base/modal/modal';
   import axios from 'axios';
 
   const SORT_DEFAULT = 0;
@@ -68,7 +85,8 @@
       this._getCodeList();
     },
     components: {
-      'v-brumbs': Brumbs
+      'v-brumbs': Brumbs,
+      'v-modal': Modal
     },
     methods: {
       sortCh (sort) {
@@ -82,6 +100,19 @@
       },
       priceRing (index) {
         this.priceSelect = index;
+      },
+      shopCar () {
+//        this.$refs.alert.show();
+        this.$refs.confirm.show();
+      },
+      hideAlert () {
+        this.$refs.alert.hide();
+      },
+      confirmHide () {
+        this.$refs.confirm.hide();
+      },
+      goShopcar() {
+        this.$router.push('/shopcar');
       },
       _getCodeList () {
         axios.get('/api/goods').then((res) => {
@@ -266,6 +297,83 @@
               &:hover {
                 background-color: #ffe5e6;
               }
+            }
+          }
+        }
+      }
+    }
+
+    .alert {
+      .desc {
+        margin: 30px 0 80px;
+        font-size: 14px;
+        text-align: center;
+        color: #605f5f;
+      }
+
+      .btns {
+        text-align: center;
+
+        .btn {
+          display: inline-block;
+          margin: 0 2.5%;
+          border: 1px solid #d1434a;
+          width: 45%;
+          min-width: 80px;
+          height: 40px;
+          font-size: 14px;
+          font-weight: 700;
+          text-align: center;
+          line-height: 40px;
+          letter-spacing: .25em;
+          color: #d1434a;
+
+          &:hover {
+            background-color: #ffe5e6;
+          }
+        }
+      }
+    }
+
+    .confirm {
+      .desc {
+        margin: 30px 0 80px;
+        font-size: 14px;
+        text-align: center;
+        color: #605f5f;
+      }
+
+      .btns {
+        font-size: 0;
+
+        .btn {
+          display: inline-block;
+          margin: 0 2.5%;
+          border: 1px solid #d1434a;
+          width: 45%;
+          min-width: 80px;
+          height: 40px;
+          font-size: 14px;
+          font-weight: 700;
+          text-align: center;
+          line-height: 40px;
+          letter-spacing: .25em;
+          color: #d1434a;
+          box-sizing: border-box;
+
+          &.btn-goon:hover {
+            background-color: #ffe5e6;
+          }
+
+          &.btn-shopcar {
+            border-color: #d1434a;
+            color: #fff;
+            background-color: #d1434a;
+
+            &:hover {
+              background-color: #f16f75;
+              border-color: #f16f75;
+              color: #fff;
             }
           }
         }
