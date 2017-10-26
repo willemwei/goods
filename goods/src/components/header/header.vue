@@ -46,6 +46,7 @@
         this.$refs.login.show();
       },
       goShopcar () {
+        this.$router.push('/cart');
       },
       exit () {
       }

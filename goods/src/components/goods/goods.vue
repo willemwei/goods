@@ -1,6 +1,6 @@
 <template>
   <div class="goods">
-    <v-brumbs>Goods</v-brumbs>
+    <v-brumbs>商品</v-brumbs>
     <div class="w1260">
       <div class="sort-wrapper">
         <span>排序方式：</span>
