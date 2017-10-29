@@ -5,8 +5,8 @@
       <div class="sort-wrapper">
         <span>排序方式：</span>
         <a href="#" @click.prevent="sortCh(0)" :class="{'active': sortType === 0}">默认排序</a>
-        <a href="#" @click.prevent="sortCh(sortType===0?-1:sortType)"
-           :class="{'active': sortType !== 0, 'desc-bottom': sortType === 2}">
+        <a href="#" @click.prevent="sortCh(sortType === 0 ? 1 : sortType === 1 ? -1 : 1)"
+           :class="{'active': sortType !== 0, 'desc-bottom': sortType === -1}">
           价格<i class="icon-price"></i></a>
       </div>
       <div class="goods-wrapper">
@@ -19,15 +19,18 @@
           </dd>
         </dl>
         <ul class="goods-list">
-          <li class="item" v-for="(item, index) in goodsSort" :key="index">
+          <li class="item" v-for="(item, index) in goods" :key="index">
             <a href="#" @click.prevent="">
-              <img width="231" height="231" border="0" v-lazy="item.productImg">
+              <img width="231" height="231" border="0" v-lazy="'/static/images/'+item.productImage">
             </a>
             <b class="name">{{ item.productName }}</b>
-            <span class="price">￥ {{ (item.productPrice * 1).toFixed(2) }}</span>
+            <span class="price">￥ {{ (item.salePrice * 1).toFixed(2) }}</span>
             <a class="add-car" href="#" @click.prevent="shopCar">加入购物车</a>
           </li>
         </ul>
+        <div v-show="loading" class="loading-more" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy"
+             infinite-scroll-distance="10">
+        </div>
       </div>
     </div>
     <v-modal class="alert" ref="alert">
@@ -56,7 +59,7 @@
 
   const SORT_DEFAULT = 0;
   const SORT_PRICE_UP = 1;
-  const SORT_PRICE_DOWN = 2;
+  const SORT_PRICE_DOWN = -1;
   const SELECT_ALL = -1;
 
   export default {
@@ -78,25 +81,23 @@
           }
         ],
         priceSelect: SELECT_ALL,
-        sortType: SORT_DEFAULT
+        sortType: SORT_DEFAULT,
+        page: 1,
+        busy: false,
+        loading: true
       };
-    },
-    created () {
-      this._getCodeList();
     },
     components: {
       'v-brumbs': Brumbs,
       'v-modal': Modal
     },
+    created () {
+      this._getGoodsList();
+    },
     methods: {
       sortCh (sort) {
         this.sortType = sort;
-
-        if (this.sortType === -1) {
-          this.sortType = SORT_PRICE_UP;
-        } else if (this.sortType !== SORT_DEFAULT) {
-          this.sortType = this.sortType === SORT_PRICE_UP ? SORT_PRICE_DOWN : SORT_PRICE_UP;
-        }
+        this._getGoodsList();
       },
       priceRing (index) {
         this.priceSelect = index;
@@ -111,43 +112,44 @@
       confirmHide () {
         this.$refs.confirm.hide();
       },
-      goShopcar() {
-        this.$router.push('/shopcar');
+      goShopcar () {
+        this.$router.push('/cart');
       },
-      _getCodeList () {
-        axios.get('/api/goods').then((res) => {
+      loadMore () {
+        this.busy = true;
+        setTimeout(() => {
+          this.page++;
+          this._getGoodsList(true);
+        }, 500);
+      },
+      _getGoodsList (isPush) {
+        let params = {
+          page: this.page,
+          size: 12
+        };
+
+        if (this.sortType !== 0) {
+          params.sort = this.sortType;
+        }
+
+        axios.get('/apis/goods', {
+          params
+        }).then((res) => {
           if (res.data.status * 1 === 0) {
-            this.goods = res.data.result;
+            if (isPush) {
+              this.goods = this.goods.concat(Array.from(res.data.result.list));
+              if (res.data.result.list.length === 0) {
+                this.busy = true;
+                this.loading = false;
+              } else {
+                this.busy = false;
+                this.loading = true;
+              }
+            } else {
+              this.goods = res.data.result.list;
+            }
           }
         });
-      }
-    },
-    computed: {
-      goodsSort () {
-        let goodsCopy = this.goods.slice();
-
-        if (this.sortType !== SORT_DEFAULT) {
-          goodsCopy.sort((a, b) => {
-            if (a.productPrice > b.productPrice) {
-              return true;
-            }
-          });
-
-          if (this.sortType === SORT_PRICE_DOWN) {
-            goodsCopy.reverse();
-          }
-        }
-
-        if (this.priceSelect !== SELECT_ALL) {
-          let price = this.priceFilter[this.priceSelect];
-          goodsCopy = goodsCopy.filter((item) => {
-            if (item.productPrice < price.end && item.productPrice >= price.start) {
-              return true;
-            }
-          });
-        }
-
-        return goodsCopy;
       }
     }
   };
@@ -210,6 +212,7 @@
 
       .goods-wrapper {
         display: flex;
+        flex-wrap: wrap;
         padding-top: 30px;
 
         .price-list {
@@ -297,6 +300,31 @@
               &:hover {
                 background-color: #ffe5e6;
               }
+            }
+          }
+        }
+
+        .loading-more {
+          padding-left: 270px;
+          width: 100%;
+          box-sizing: border-box;
+
+          &:after {
+            display: block;
+            margin: 30px auto 10px;
+            width: 40px;
+            height: 40px;
+            background-image: url('/static/images/icon-loading.png');
+            animation: roll 3s infinite;
+            content: '';
+          }
+
+          @keyframes roll {
+            0% {
+              transform: rotate(0);
+            }
+            0% {
+              transform: rotate(-360deg);
             }
           }
         }

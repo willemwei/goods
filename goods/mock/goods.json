@@ -5,86 +5,86 @@
     {
       "productId": "100001",
       "productName": "小米3",
-      "productPrice": "2499",
-      "productImg": "/static/images/1.jpg"
+      "salePrice": "2499",
+      "productImage": "1.jpg"
     },
     {
       "productId": "100001",
       "productName": "小米4",
-      "productPrice": "2399",
-      "productImg": "/static/images/2.jpg"
+      "salePrice": "2399",
+      "productImage": "2.jpg"
     },
     {
       "productId": "100001",
       "productName": "小米5",
-      "productPrice": "2699",
-      "productImg": "/static/images/6.jpg"
+      "salePrice": "2699",
+      "productImage": "6.jpg"
     },
     {
       "productId": "100001",
       "productName": "小米6",
-      "productPrice": "2199",
-      "productImg": "/static/images/4.jpg"
+      "salePrice": "2199",
+      "productImage": "4.jpg"
     },
     {
       "productId": "100001",
       "productName": "xxx",
-      "productPrice": "1200",
-      "productImg": "/static/images/7.jpg"
+      "salePrice": "1200",
+      "productImage": "7.jpg"
     },
     {
       "productId": "100001",
       "productName": "yyy",
-      "productPrice": "595",
-      "productImg": "/static/images/8.jpg"
+      "salePrice": "595",
+      "productImage": "8.jpg"
     },
     {
       "productId": "100001",
       "productName": "yyy",
-      "productPrice": "787",
-      "productImg": "/static/images/9.jpg"
+      "salePrice": "787",
+      "productImage": "9.jpg"
     },
     {
       "productId": "100001",
       "productName": "yyy",
-      "productPrice": "2345",
-      "productImg": "/static/images/10.jpg"
+      "salePrice": "2345",
+      "productImage": "10.jpg"
     },
     {
       "productId": "100001",
       "productName": "zzz",
-      "productPrice": "2567",
-      "productImg": "/static/images/11.jpg"
+      "salePrice": "2567",
+      "productImage": "11.jpg"
     },
     {
       "productId": "100001",
       "productName": "vvv",
-      "productPrice": "2842",
-      "productImg": "/static/images/12.jpg"
+      "salePrice": "2842",
+      "productImage": "12.jpg"
     },
     {
       "productId": "100001",
       "productName": "uuu",
-      "productPrice": "2991",
-      "productImg": "/static/images/13.jpg"
+      "salePrice": "2991",
+      "productImage": "13.jpg"
     },
     {
       "productId": "100001",
       "productName": "jjj",
-      "productPrice": "2471",
-      "productImg": "/static/images/14.jpg"
+      "salePrice": "2471",
+      "productImage": "14.jpg"
     },
     {
       "productId": "100001",
       "productName": "yyy",
-      "productPrice": "1234",
-      "productImg": "http://pic6.huitu.com/res/20130116/84481_20130116142820494200_1.jpg"
+      "salePrice": "1234",
+      "productImage": "http://pic6.huitu.com/res/20130116/84481_20130116142820494200_1.jpg"
     },
     {
       "productId": "100001",
       "productName": "yyy",
-      "productPrice": "3835",
-      "productImg": "http://img2.imgtn.bdimg.com/it/u=4289577871,2613521315&fm=11&gp=0.jpg"
+      "salePrice": "3835",
+      "productImage": "http://img2.imgtn.bdimg.com/it/u=4289577871,2613521315&fm=11&gp=0.jpg"
     }
   ]
 }
