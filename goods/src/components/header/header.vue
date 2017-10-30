@@ -7,6 +7,7 @@
       </a>
       <div class="log-container">
         <span @click="logShow">登录</span>
+        <span>用户</span>
         <span @click="exit">退出</span>
         <span class="shopcar" @click="goShopcar">购物车</span>
       </div>
@@ -15,14 +16,14 @@
       <div slot="content">
         <div class="input-group">
           <i class="icon icon-person"></i>
-          <input class="input-box" type="text" placeholder="用户名">
+          <input class="input-box" v-model:value="userName" type="text" placeholder="用户名">
         </div>
         <div class="input-group">
           <i class="icon icon-lock"></i>
-          <input class="input-box" type="password" placeholder="密码">
+          <input class="input-box" v-model:value="userPwd" type="password" placeholder="密码">
         </div>
         <div class="btn-group">
-          <a class="btn" href="#" @click.prevent="">登录</a>
+          <a class="btn" href="#" @click.prevent="login">登录</a>
         </div>
       </div>
     </v-modal>
@@ -31,11 +32,14 @@
 
 <script type="text/ecmascript-6">
   import Modal from '@/base/modal/modal';
+  import Axios from 'axios';
 
   export default {
     data () {
       return {
-        logToggle: false
+        logToggle: false,
+        userName: 'admin',
+        userPwd: '123456'
       };
     },
     components: {
@@ -49,6 +53,15 @@
         this.$router.push('/cart');
       },
       exit () {
+      },
+      login () {
+        Axios.post('/apis/users', {
+          userName: this.userName,
+          userPwd: this.userPwd
+        }).then((res) => {
+          if (res.data.status === 0) {
+          }
+        });
       }
     }
   };

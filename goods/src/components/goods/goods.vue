@@ -28,9 +28,11 @@
             <a class="add-car" href="#" @click.prevent="shopCar">加入购物车</a>
           </li>
         </ul>
-        <div v-show="loading" class="loading-more" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy"
-             infinite-scroll-distance="10">
-        </div>
+        <transition name="load">
+          <div v-show="loading" class="loading-more" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy"
+               infinite-scroll-distance="10">
+          </div>
+        </transition>
       </div>
     </div>
     <v-modal class="alert" ref="alert">
@@ -58,8 +60,6 @@
   import axios from 'axios';
 
   const SORT_DEFAULT = 0;
-  const SORT_PRICE_UP = 1;
-  const SORT_PRICE_DOWN = -1;
   const SELECT_ALL = -1;
 
   export default {
@@ -97,10 +97,12 @@
     methods: {
       sortCh (sort) {
         this.sortType = sort;
-        this._getGoodsList();
+        this._getGoodsList(false, 1);
       },
       priceRing (index) {
+        let flag = this.priceSelect === index;
         this.priceSelect = index;
+        this._getGoodsList(flag, 1);
       },
       shopCar () {
 //        this.$refs.alert.show();
@@ -122,17 +124,29 @@
           this._getGoodsList(true);
         }, 500);
       },
-      _getGoodsList (isPush) {
+      _getGoodsList (isPush, pageSet) {
         let params = {
-          page: this.page,
           size: 12
         };
 
-        if (this.sortType !== 0) {
+        if (this.sortType !== SORT_DEFAULT) {
           params.sort = this.sortType;
         }
 
-        axios.get('/apis/goods', {
+        if (pageSet) {
+          this.page = pageSet;
+        }
+
+        if (this.priceSelect !== SELECT_ALL) {
+          let priceCurrent = this.priceFilter[this.priceSelect];
+          params.ring = {
+            start: priceCurrent.start,
+            end: priceCurrent.end
+          };
+        }
+
+        params.page = this.page;
+        axios.post('/apis/goods', {
           params
         }).then((res) => {
           if (res.data.status * 1 === 0) {
@@ -147,6 +161,8 @@
               }
             } else {
               this.goods = res.data.result.list;
+              this.busy = false;
+              this.loading = true;
             }
           }
         });
@@ -305,9 +321,17 @@
         }
 
         .loading-more {
+          overflow: hidden;
           padding-left: 270px;
           width: 100%;
+          height: 80px;
           box-sizing: border-box;
+          transition: height .4s;
+
+          &.load-leave-to,
+          &.load-enter {
+            height: 0;
+          }
 
           &:after {
             display: block;

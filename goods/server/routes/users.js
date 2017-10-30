@@ -1,34 +1,27 @@
 const express = require('express');
-const Mongoose = require('mongoose');
 const router = express.Router();
-const Users = require('../models/users');
+const Mongoose = require('mongoose');
+const User = require('../models/users');
 
-Mongoose.connection.on('connected', () => {
-  console.log('Connected Success');
-});
+Mongoose.connect('mongodb://127.0.0.1:27017/db_demo');
 
-router.get('/', (req, res, next) => {
-  let query = req.query;
+router.post('/login', (req, res, next) => {
+  let params = req.body;
 
-  Users.find({userName: query.userName, userPwd: query.userPwd}, (err, doc) => {
-    let logIsNot = false;
-
+  User.find({
+    userName: params.userName,
+    userPwd: params.userPwd
+  }, (err, doc) => {
     if (err) {
       res.json({
         status: 1,
         msg: err.message
       });
     } else {
-      if (doc.length >= 1) {
-        logIsNot = true;
-      }
-
       res.json({
         status: 0,
         msg: '',
-        result: {
-          logIsNot
-        }
+        result: doc.length > 0
       });
     }
   });
