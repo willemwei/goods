@@ -12,8 +12,8 @@ let userSchema = new Schema({
       productName: String,
       salePrice: String,
       productImage: String,
-      checked: String,
-      productNum: String
+      checked: Number,
+      productNum: Number
     }
   ],
   addressList: Array

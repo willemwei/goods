@@ -5,6 +5,7 @@ import App from './App';
 import router from './router';
 import LazyLoad from 'vue-lazyload';
 import infiniteScroll from 'vue-infinite-scroll';
+import store from '@/store/index';
 
 Vue.config.productionTip = false;
 
@@ -19,6 +20,7 @@ Vue.use(infiniteScroll);
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: {App}
 });

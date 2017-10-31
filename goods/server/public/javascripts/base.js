@@ -1,7 +1,7 @@
-let errData = (res, err) => {
+let errData = (res, errInfo) => {
   res.json({
     status: 1,
-    msg: err.message
+    msg: errInfo
   });
 };
 

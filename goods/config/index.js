@@ -3,6 +3,7 @@
 // see http://vuejs-templates.github.io/webpack for documentation.
 
 const path = require('path');
+const proxyUrl = 'http://localhost:3000';
 
 module.exports = {
   build: {
@@ -32,10 +33,16 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
       '/apis/goods': {
-        target: 'http://localhost:3000'
+        target: proxyUrl
       },
-      '/apis/users': {
-        target: 'http://localhost:3000'
+      '/apis/users/login': {
+        target: proxyUrl
+      },
+      '/apis/goods/addCar': {
+        target: proxyUrl
+      },
+      '/apis/goods/getGoods': {
+        target: proxyUrl
       }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"

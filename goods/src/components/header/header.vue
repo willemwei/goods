@@ -6,10 +6,10 @@
         <img src="./logo.png" alt="简易商城" title="简易商城">
       </a>
       <div class="log-container">
-        <span @click="logShow">登录</span>
-        <span>用户</span>
-        <span @click="exit">退出</span>
-        <span class="shopcar" @click="goShopcar">购物车</span>
+        <span v-if="!logNot" @click="logShow">登录</span>
+        <span v-if="logNot">{{ userName }}</span>
+        <span v-if="logNot" @click="exit">退出</span>
+        <span v-if="logNot" class="shopcar" @click="goShopcar">购物车</span>
       </div>
     </div>
     <v-modal class="login" ref="login" title="登录">
@@ -33,36 +33,53 @@
 <script type="text/ecmascript-6">
   import Modal from '@/base/modal/modal';
   import Axios from 'axios';
+  import { mapGetters, mapMutations } from 'vuex';
 
   export default {
     data () {
       return {
         logToggle: false,
         userName: 'admin',
-        userPwd: '123456'
+        userPwd: '123456',
+        logNot: false
       };
     },
     components: {
       'v-modal': Modal
+    },
+    computed: {
+      ...mapGetters([
+        'userId'
+      ])
     },
     methods: {
       logShow () {
         this.$refs.login.show();
       },
       goShopcar () {
-        this.$router.push('/cart');
+        if (this.userId) {
+          this.$router.push('/cart');
+        }
       },
       exit () {
+        this.setUserId('');
+        this.logNot = false;
       },
       login () {
-        Axios.post('/apis/users', {
+        Axios.post('/apis/users/login', {
           userName: this.userName,
           userPwd: this.userPwd
         }).then((res) => {
           if (res.data.status === 0) {
+            this.setUserId(res.data.result);
+            this.$refs.login.hide();
+            this.logNot = true;
           }
         });
-      }
+      },
+      ...mapMutations({
+        setUserId: 'SET_USERID'
+      })
     }
   };
 </script>

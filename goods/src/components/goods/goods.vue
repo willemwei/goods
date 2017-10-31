@@ -25,7 +25,7 @@
             </a>
             <b class="name">{{ item.productName }}</b>
             <span class="price">￥ {{ (item.salePrice * 1).toFixed(2) }}</span>
-            <a class="add-car" href="#" @click.prevent="shopCar">加入购物车</a>
+            <a class="add-car" href="#" @click.prevent="shopCar(item.productId)">加入购物车</a>
           </li>
         </ul>
         <transition name="load">
@@ -58,6 +58,7 @@
   import Brumbs from '@/base/crumbs/crumbs';
   import Modal from '@/base/modal/modal';
   import axios from 'axios';
+  import { mapGetters } from 'vuex';
 
   const SORT_DEFAULT = 0;
   const SELECT_ALL = -1;
@@ -94,6 +95,11 @@
     created () {
       this._getGoodsList();
     },
+    computed: {
+      ...mapGetters([
+        'userId'
+      ])
+    },
     methods: {
       sortCh (sort) {
         this.sortType = sort;
@@ -104,9 +110,20 @@
         this.priceSelect = index;
         this._getGoodsList(flag, 1);
       },
-      shopCar () {
-//        this.$refs.alert.show();
-        this.$refs.confirm.show();
+      shopCar (productId) {
+        if (!this.userId) {
+          this.$refs.alert.show();
+          return;
+        }
+
+        axios.post('/apis/goods/addCar', {
+          userId: this.userId,
+          productId
+        }).then((res) => {
+          if (res.data.status === 0) {
+            this.$refs.confirm.show();
+          }
+        });
       },
       hideAlert () {
         this.$refs.alert.hide();

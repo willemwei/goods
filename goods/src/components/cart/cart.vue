@@ -10,15 +10,15 @@
         <div class="text">单价</div>
         <div class="text">操作项</div>
       </li>
-      <li class="item">
+      <li class="item" v-for="item in goods">
         <div class="text">
-          <span class="radio-group"></span>
-          <img class="pic" src="/static/images/1.jpg" width="78" height="78">
-          <span class="name">智能插线板</span>
+          <span class="radio-group" :class="{'active': item.checked}"></span>
+          <img class="pic" :src="'/static/images/' + item.productImage" width="78" height="78">
+          <span class="name">{{ item.productName }}</span>
         </div>
-        <div class="text">￥59.00</div>
+        <div class="text">￥{{ (item.salePrice*1).toFixed(2) }}</div>
         <div class="text">
-          <v-cart-control :goods="goods1"></v-cart-control>
+          <v-cart-control :goods="item"></v-cart-control>
         </div>
         <div class="text price">￥295.00</div>
         <div class="text">
@@ -54,6 +54,8 @@
   import Crumbs from '@/base/crumbs/crumbs';
   import CartControl from '@/base/cart-control/cart-control';
   import Modal from '@/base/modal/modal';
+  import Axios from 'axios';
+  import { mapGetters } from 'vuex';
 
   export default {
     components: {
@@ -63,9 +65,13 @@
     },
     data () {
       return {
-        goods1: {},
-        goods2: {count: 2}
+        goods: []
       };
+    },
+    computed: {
+      ...mapGetters([
+        'userId'
+      ])
     },
     methods: {
       deleteItem () {
@@ -75,6 +81,15 @@
       deleteCancel () {
         this.$refs.delete.hide();
       }
+    },
+    created () {
+      Axios.post('/apis/goods/getGoods', {
+        userId: this.userId
+      }).then((res) => {
+        if (res.data.status === 0) {
+          this.goods = res.data.result.list;
+        }
+      });
     }
   };
 </script>

@@ -36,7 +36,7 @@ router.post('/', function (req, res, next) {
 
   goodsModel.exec((err, doc) => {
     if (err) {
-      base.errData(res, err);
+      base.errData(res, err.message);
     } else {
       res.json({
         status: '0',
@@ -51,23 +51,61 @@ router.post('/', function (req, res, next) {
 });
 
 router.post('/addCar', (req, res, next) => {
-  let userId = '100000077';
+  let userId = req.body.userId;
   let productId = req.body.productId;
 
-  User.find({userId}, (err, userDoc) => {
+  User.findOne({userId}, (err, userDoc) => {
     if (err) {
       base.errData(res, err);
     } else {
       Goods.findOne({productId}, (err, productDoc) => {
-        if (err) {
-          base.errData(res, err);
+        if (err || !productDoc) {
+          base.errData(res, err ? err.message : '数据不存在');
         } else {
-          if (!productDoc) {
-            base.errData(res, err);
-          } else {
-            productDoc.checked = 1;
-            productDoc.productNum = 1;
+          let exist = false;
+          userDoc.cartList.forEach((item, index) => {
+            if (item.productId === productId) {
+              exist = true;
+              userDoc.cartList[index].productNum++;
+            }
+          });
+
+          if (!exist) {
+            productDoc._doc.productNum = 1;
+            productDoc._doc.checked = 1;
+            userDoc.cartList.push(productDoc);
           }
+
+          userDoc.save((err, saveDoc) => {
+            if (err) {
+              base.errData(res, err.message);
+            } else {
+              res.json({
+                status: 0,
+                msg: '',
+                result: true
+              });
+            }
+          })
+          ;
+        }
+      });
+    }
+  });
+});
+
+router.post('/getGoods', (req, res, next) => {
+  let userId = req.body.userId;
+
+  User.findOne({userId}, (err, doc) => {
+    if (err) {
+      base.errData(res, err.message);
+    } else {
+      res.json({
+        status: 0,
+        msg: '',
+        result: {
+          list: doc.cartList
         }
       });
     }

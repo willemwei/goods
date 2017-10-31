@@ -1,6 +1,6 @@
 <template>
   <transition name="slide-fade">
-    <div class="modal" v-show="modalToggle">
+    <div class="modal" v-if="modalToggle">
       <div class="bg" @click="hide"></div>
       <div class="wrapper">
         <b class="title">{{ title }}</b>
