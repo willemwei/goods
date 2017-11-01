@@ -6,10 +6,10 @@
         <img src="./logo.png" alt="简易商城" title="简易商城">
       </a>
       <div class="log-container">
-        <span v-if="!logNot" @click="logShow">登录</span>
-        <span v-if="logNot">{{ userName }}</span>
-        <span v-if="logNot" @click="exit">退出</span>
-        <span v-if="logNot" class="shopcar" @click="goShopcar">购物车</span>
+        <span v-if="!logUser.userName" @click="logShow">登录</span>
+        <span v-if="logUser.userName">{{ logUser.userName }}</span>
+        <span v-if="logUser.userName" @click="exit">退出</span>
+        <span v-if="logUser.userName" class="shopcar" @click="goShopcar">购物车</span>
       </div>
     </div>
     <v-modal class="login" ref="login" title="登录">
@@ -25,6 +25,7 @@
         <div class="btn-group">
           <a class="btn" href="#" @click.prevent="login">登录</a>
         </div>
+        <div class="err" v-show="errInfo">{{ errInfo }}</div>
       </div>
     </v-modal>
   </header>
@@ -41,11 +42,15 @@
         logToggle: false,
         userName: 'admin',
         userPwd: '123456',
-        logNot: false
+        logUser: {},
+        errInfo: ''
       };
     },
     components: {
       'v-modal': Modal
+    },
+    mounted () {
+      this._checkLog();
     },
     computed: {
       ...mapGetters([
@@ -57,23 +62,42 @@
         this.$refs.login.show();
       },
       goShopcar () {
-        if (this.userId) {
-          this.$router.push('/cart');
-        }
+        this.$router.push('/cart');
       },
       exit () {
-        this.setUserId('');
-        this.logNot = false;
+//        this.setUserId('');
+        Axios.post('apis/users/logOut').then((res) => {
+          res = res.data;
+          if (res.status === 0) {
+            this.logUser = {};
+          }
+        });
       },
       login () {
+        if (!this.userName || !this.userPwd) {
+          this.errInfo = '输入不能为空';
+          return;
+        }
+
         Axios.post('/apis/users/login', {
           userName: this.userName,
           userPwd: this.userPwd
         }).then((res) => {
           if (res.data.status === 0) {
-            this.setUserId(res.data.result);
+//            this.setUserId(res.data.result);
+            this.logUser = res.data.result;
             this.$refs.login.hide();
-            this.logNot = true;
+            this.errInfo = '';
+          } else {
+            this.errInfo = res.data.msg;
+          }
+        });
+      },
+      _checkLog () {
+        Axios.post('/apis/users/checkLog').then((res) => {
+          res = res.data;
+          if (res.status === 0) {
+            this.logUser = res.result;
           }
         });
       },
@@ -194,6 +218,13 @@
             background: #61b1ef;
           }
         }
+      }
+
+      .err {
+        margin-top: 10px;
+        font-size: 13px;
+        text-align: center;
+        color: #f00;
       }
     }
   }

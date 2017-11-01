@@ -38,7 +38,7 @@
     <v-modal class="alert" ref="alert">
       <p class="desc" slot="content">您当前尚未登录！</p>
       <div class="btns" slot="footer">
-        <a class="btn" href="#" @click="hideAlert">关闭</a>
+        <a class="btn" href="#" @click.prevent="hideAlert">关闭</a>
       </div>
     </v-modal>
     <v-modal class="confirm" ref="confirm">
@@ -111,17 +111,14 @@
         this._getGoodsList(flag, 1);
       },
       shopCar (productId) {
-        if (!this.userId) {
-          this.$refs.alert.show();
-          return;
-        }
-
         axios.post('/apis/goods/addCar', {
           userId: this.userId,
           productId
         }).then((res) => {
           if (res.data.status === 0) {
             this.$refs.confirm.show();
+          } else {
+            this.$refs.alert.show();
           }
         });
       },
