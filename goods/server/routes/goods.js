@@ -12,6 +12,7 @@ mongoose.connection.on('connected', function () {
   console.log('mongodb connected.');
 });
 
+// 获取商品数据
 router.post('/', function (req, res, next) {
   let query = req.body.params;
 
@@ -50,6 +51,7 @@ router.post('/', function (req, res, next) {
   });
 });
 
+// 添加到购物车
 router.post('/addCar', (req, res, next) => {
   let userId = req.body.userId;
   let productId = req.body.productId;
@@ -94,18 +96,85 @@ router.post('/addCar', (req, res, next) => {
   });
 });
 
+// 购物车
 router.post('/getGoods', (req, res, next) => {
   let userId = req.body.userId;
 
   User.findOne({userId}, (err, doc) => {
-    if (err) {
-      base.errData(res, err.message);
+    if (err || !doc) {
+      base.errData(res, err ? err.message : '暂无数据');
     } else {
       res.json({
         status: 0,
         msg: '',
         result: {
           list: doc.cartList
+        }
+      });
+    }
+  });
+});
+
+// 删除购物车数据
+router.post('/delCart', (req, res, next) => {
+  let userId = req.body.userId;
+  let productId = req.body.productId;
+
+  User.update({userId: userId}, {
+    $pull: {
+      'cartList': {
+        'productId': productId
+      }
+    }
+  }, (err, doc) => {
+    if (err) {
+      base.errData(res, err.message);
+    } else {
+      res.json({
+        status: 0,
+        msg: '',
+        result: ''
+      });
+    }
+  });
+});
+
+// 更改购物车数据
+router.post('/setCart', (req, res, next) => {
+  let userId = req.body.userId;
+  let productId = req.body.productId === 'defined' ? '' : req.body.productId;
+  let allChecked = req.body.allChecked === 'defined' ? '' : req.body.allChecked;
+  let params = req.body.params;
+
+  User.findOne({userId}, (err, userDoc) => {
+    if (err || !userDoc) {
+      base.errData(res, err ? err.message : '数据不存在');
+    } else {
+      userDoc.cartList.forEach((item) => {
+        if (productId !== '') {
+          if (item.productId === productId) {
+            for (let key in params) {
+              item[key] = params[key];
+            }
+          }
+        }
+
+        if (allChecked !== '') {
+          item.checked = allChecked;
+        }
+      });
+
+      userDoc.save((err, doc) => {
+        if (err || !doc) {
+          base.errData(res, err ? err.message : '操作失败');
+        } else {
+          res.json({
+            status: 0,
+            msg: '',
+            result: {
+              list: doc.cartList
+            }
+          });
         }
       });
     }

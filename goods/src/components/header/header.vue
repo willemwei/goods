@@ -6,10 +6,10 @@
         <img src="./logo.png" alt="简易商城" title="简易商城">
       </a>
       <div class="log-container">
-        <span v-if="!logUser.userName" @click="logShow">登录</span>
-        <span v-if="logUser.userName">{{ logUser.userName }}</span>
-        <span v-if="logUser.userName" @click="exit">退出</span>
-        <span v-if="logUser.userName" class="shopcar" @click="goShopcar">购物车</span>
+        <span v-if="!user.userId" @click="logShow">登录</span>
+        <span v-if="user.userId">{{ user.userName }}</span>
+        <span v-if="user.userId" @click="exit">退出</span>
+        <span v-if="user.userId" class="shopcar" @click="goShopcar">购物车</span>
       </div>
     </div>
     <v-modal class="login" ref="login" title="登录">
@@ -54,7 +54,7 @@
     },
     computed: {
       ...mapGetters([
-        'userId'
+        'user'
       ])
     },
     methods: {
@@ -65,11 +65,11 @@
         this.$router.push('/cart');
       },
       exit () {
-//        this.setUserId('');
         Axios.post('apis/users/logOut').then((res) => {
           res = res.data;
           if (res.status === 0) {
-            this.logUser = {};
+            this.setUser({});
+            this.$router.push('/');
           }
         });
       },
@@ -84,8 +84,7 @@
           userPwd: this.userPwd
         }).then((res) => {
           if (res.data.status === 0) {
-//            this.setUserId(res.data.result);
-            this.logUser = res.data.result;
+            this.setUser(res.data.result);
             this.$refs.login.hide();
             this.errInfo = '';
           } else {
@@ -97,12 +96,16 @@
         Axios.post('/apis/users/checkLog').then((res) => {
           res = res.data;
           if (res.status === 0) {
-            this.logUser = res.result;
+            this.setUser(res.result);
+          }
+
+          if (res.status === 2) {
+            this.$router.push('/');
           }
         });
       },
       ...mapMutations({
-        setUserId: 'SET_USERID'
+        setUser: 'SET_USER'
       })
     }
   };

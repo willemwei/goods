@@ -1,7 +1,7 @@
 <template>
   <div class="cart-control">
     <div class="item" @click="subtracte">-</div>
-    <div class="num">{{ goods.count ? goods.count : 1 }}</div>
+    <div class="num">{{ goods.productNum ? goods.productNum : 1 }}</div>
     <div class="item" @click="addite">+</div>
   </div>
 </template>
@@ -20,17 +20,21 @@
     },
     methods: {
       subtracte () {
-        if (this.goods.count > 1) {
-          this.goods.count--;
+        if (this.goods.productNum > 1) {
+          this.goods.productNum--;
         } else {
-          Vue.set(this.goods, 'count', 1);
+          Vue.set(this.goods, 'productNum', 1);
         }
+
+        this.$emit('countEdit');
       },
       addite () {
-        if (!this.goods.count) {
-          Vue.set(this.goods, 'count', 1);
+        if (!this.goods.productNum) {
+          Vue.set(this.goods, 'productNum', 1);
         }
-        this.goods.count++;
+        this.goods.productNum++;
+
+        this.$emit('countEdit');
       }
     }
   };

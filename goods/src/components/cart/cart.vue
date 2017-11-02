@@ -12,29 +12,29 @@
       </li>
       <li class="item" v-for="item in goods">
         <div class="text">
-          <span class="radio-group" :class="{'active': item.checked}"></span>
+          <span class="radio-group" :class="{'active': item.checked}" @click="setChecked(item)"></span>
           <img class="pic" :src="'/static/images/' + item.productImage" width="78" height="78">
           <span class="name">{{ item.productName }}</span>
         </div>
-        <div class="text">￥{{ (item.salePrice*1).toFixed(2) }}</div>
+        <div class="text">￥{{ (item.salePrice * 1).toFixed(2) }}</div>
         <div class="text">
-          <v-cart-control :goods="item"></v-cart-control>
+          <v-cart-control :goods="item" @countEdit="countEdit(item)"></v-cart-control>
         </div>
-        <div class="text price">￥295.00</div>
+        <div class="text price">￥{{ (item.productNum * item.salePrice).toFixed(2) }}</div>
         <div class="text">
-          <i class="icon-delete" @click="deleteItem"></i>
+          <i class="icon-delete" @click="deleteItem(item)"></i>
         </div>
       </li>
     </ul>
     <div class="total w1260">
-      <div class="all-selected">
-        <span class="radio-group"></span>
+      <div class="all-selected" @click="allChecked">
+        <span class="radio-group" :class="{'active': totalChecked}"></span>
         <span class="text">全选</span>
       </div>
       <div class="price-total">
         <span class="text">总价：</span>
-        <span class="price">￥0.00</span>
-        <div class="btn">提交订单</div>
+        <span class="price">￥{{ totalPrice.toFixed(2) }}</span>
+        <div class="btn" :class="{'active': totalPrice}">提交订单</div>
       </div>
     </div>
     <v-modal ref="delete" class="delete">
@@ -55,6 +55,7 @@
   import CartControl from '@/base/cart-control/cart-control';
   import Modal from '@/base/modal/modal';
   import Axios from 'axios';
+  import Vue from 'vue';
   import { mapGetters } from 'vuex';
 
   export default {
@@ -65,31 +66,118 @@
     },
     data () {
       return {
-        goods: []
+        goods: [],
+        delGoods: {}
       };
     },
     computed: {
+      totalPrice () {
+        let result = 0;
+        this.goods.forEach((item) => {
+          if (item.productNum && item.salePrice && item.checked) {
+            result += item.productNum * item.salePrice;
+          }
+        });
+
+        return result;
+      },
+      totalChecked () {
+        let result = true;
+        this.goods.forEach((item) => {
+          if (!item.checked) {
+            result = false;
+          }
+        });
+
+        return result;
+      },
       ...mapGetters([
-        'userId'
+        'user'
       ])
     },
     methods: {
-      deleteItem () {
+      deleteItem (item) {
+        this.delGoods = item;
         this.$refs.delete.show();
       },
-      deleteOk () {},
+      deleteOk () {
+        if (this.deleteItem) {
+          Axios.post('/apis/goods/delCart', {
+            'userId': this.user.userId,
+            'productId': this.delGoods.productId
+          }).then((res) => {
+            res = res.data;
+            if (res.status === 0) {
+              this.goods.forEach((item, index) => {
+                if (item.productId === this.delGoods.productId) {
+                  this.goods.splice(index, 1);
+                }
+              });
+            }
+            this.$refs.delete.hide();
+          });
+        }
+      },
       deleteCancel () {
+        this.delGoods = {};
         this.$refs.delete.hide();
+      },
+      setChecked (item) {
+        Axios.post('apis/goods/setCart', {
+          userId: this.user.userId,
+          productId: item.productId,
+          params: {
+            checked: item.checked ? 0 : 1
+          }
+        }).then((res) => {
+          res = res.data;
+          if (res.status === 0) {
+            this.goods = res.result.list;
+          }
+        });
+      },
+      allChecked () {
+        Axios.post('/apis/goods/setCart', {
+          userId: this.user.userId,
+          allChecked: !this.totalChecked
+        }).then((res) => {
+          res = res.data;
+          if (res.status === 0) {
+            this.goods = res.result.list;
+          }
+        });
+      },
+      countEdit (item) {
+        Axios.post('apis/goods/setCart', {
+          userId: this.user.userId,
+          productId: item.productId,
+          params: {
+            productNum: item.productNum
+          }
+        }).then((res) => {
+          res = res.data;
+          if (res.status === 0) {
+            this.goods = res.result.list;
+          }
+        });
+      },
+      _getGoods () {
+        setTimeout(() => {
+          Axios.post('/apis/goods/getGoods', {
+            userId: this.user.userId
+          }).then((res) => {
+            if (res.data.status === 0) {
+              this.goods = res.data.result.list;
+            }
+          });
+        }, 0);
       }
     },
     created () {
-      Axios.post('/apis/goods/getGoods', {
-        userId: this.userId
-      }).then((res) => {
-        if (res.data.status === 0) {
-          this.goods = res.data.result.list;
-        }
-      });
+      if (!this.user) {
+        this.$router.push('/');
+      }
+      this._getGoods();
     }
   };
 </script>
@@ -133,6 +221,7 @@
 
         .text {
           display: table-cell;
+          border-bottom: 1px solid #e9e9e9;
           padding: 32px 0;
           text-align: center;
 
@@ -271,6 +360,7 @@
           background-color: #ccc;
 
           &.active {
+            cursor: pointer;
             background-color: #de414a;
 
             &:hover {

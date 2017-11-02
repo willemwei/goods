@@ -97,7 +97,7 @@
     },
     computed: {
       ...mapGetters([
-        'userId'
+        'user'
       ])
     },
     methods: {
@@ -112,7 +112,7 @@
       },
       shopCar (productId) {
         axios.post('/apis/goods/addCar', {
-          userId: this.userId,
+          userId: this.user.userId,
           productId
         }).then((res) => {
           if (res.data.status === 0) {

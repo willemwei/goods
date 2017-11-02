@@ -45,7 +45,7 @@ app.use((req, res, next) => {
       next();
     } else {
       res.json({
-        status: 1,
+        status: 2,
         msg: '用户未登录',
         result: ''
       });
