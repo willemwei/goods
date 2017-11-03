@@ -1,7 +1,7 @@
 <template>
   <nav class="crumbs">
     <div class="w1260">
-      <a class="link" href="/">首页</a>
+      <a class="link" href="#" @click.prevent="$router.push('/')">首页</a>
       <span class="divise">/</span>
       <span class="current">
         <slot></slot>

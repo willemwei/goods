@@ -1,7 +1,7 @@
 <template>
   <header class="header">
     <div class="w1260">
-      <a class="logo" href="/">
+      <a class="logo" href="#" @click.prevent="$router.push('/')">
         <h1 class="hide-title">简易商城</h1>
         <img src="./logo.png" alt="简易商城" title="简易商城">
       </a>
@@ -9,7 +9,7 @@
         <span v-if="!user.userId" @click="logShow">登录</span>
         <span v-if="user.userId">{{ user.userName }}</span>
         <span v-if="user.userId" @click="exit">退出</span>
-        <span v-if="user.userId" class="shopcar" @click="goShopcar">购物车</span>
+        <span v-if="user.userId" class="shopcar" @click="goShopcar">购物车<i class="num">{{ cartList.length }}</i></span>
       </div>
     </div>
     <v-modal class="login" ref="login" title="登录">
@@ -26,6 +26,12 @@
           <a class="btn" href="#" @click.prevent="login">登录</a>
         </div>
         <div class="err" v-show="errInfo">{{ errInfo }}</div>
+      </div>
+    </v-modal>
+    <v-modal class="alert" ref="alert">
+      <p class="desc" slot="content">{{ alert.msg }}</p>
+      <div class="btns" slot="footer">
+        <a class="btn" href="#" @click.prevent="hideAlert">关闭</a>
       </div>
     </v-modal>
   </header>
@@ -54,7 +60,9 @@
     },
     computed: {
       ...mapGetters([
-        'user'
+        'user',
+        'cartList',
+        'alert'
       ])
     },
     methods: {
@@ -69,6 +77,8 @@
           res = res.data;
           if (res.status === 0) {
             this.setUser({});
+            this.setAddressList([]);
+            this.setCartList([]);
             this.$router.push('/');
           }
         });
@@ -83,8 +93,14 @@
           userName: this.userName,
           userPwd: this.userPwd
         }).then((res) => {
-          if (res.data.status === 0) {
-            this.setUser(res.data.result);
+          res = res.data;
+          if (res.status === 0) {
+            this.setUser({
+              userId: res.result.userId,
+              userName: res.result.userName
+            });
+            this.setCartList(res.result.cartList);
+            this.setAddressList(res.result.addressList);
             this.$refs.login.hide();
             this.errInfo = '';
           } else {
@@ -92,11 +108,22 @@
           }
         });
       },
+      hideAlert () {
+        this.setAlert({
+          show: false,
+          msg: ''
+        });
+      },
       _checkLog () {
         Axios.post('/apis/users/checkLog').then((res) => {
           res = res.data;
           if (res.status === 0) {
-            this.setUser(res.result);
+            this.setUser({
+              userId: res.result.userId,
+              userName: res.result.userName
+            });
+            this.setCartList(res.result.cartList);
+            this.setAddressList(res.result.addressList);
           }
 
           if (res.status === 2) {
@@ -105,8 +132,20 @@
         });
       },
       ...mapMutations({
-        setUser: 'SET_USER'
+        setUser: 'SET_USER',
+        setCartList: 'SET_CART_LIST',
+        setAddressList: 'SET_ADDRESS_LIST',
+        setAlert: 'SET_ALERT'
       })
+    },
+    watch: {
+      alert (newVal) {
+        if (newVal.show) {
+          this.$refs.alert.show();
+        } else {
+          this.$refs.alert.hide();
+        }
+      }
     }
   };
 </script>
@@ -158,6 +197,7 @@
       }
 
       .shopcar {
+        position: relative;
         margin-right: 0;
         width: 24px;
         height: 24px;
@@ -165,6 +205,21 @@
         background-image: url(~'./icon-shopcar.png');
         -webkit-background-size: cover;
         background-size: cover;
+
+        .num {
+          position: absolute;
+          top: -9px;
+          right: -11px;
+          border-radius: 10px;
+          padding: 1px 2px;
+          min-width: 11px;
+          font-size: 12px;
+          font-style: normal;
+          font-weight: 400;
+          text-align: center;
+          color: #fff;
+          background-color: #eb767d;
+        }
       }
     }
 
@@ -228,6 +283,38 @@
         font-size: 13px;
         text-align: center;
         color: #f00;
+      }
+    }
+
+    .alert {
+      .desc {
+        margin: 30px 0 80px;
+        font-size: 14px;
+        text-align: center;
+        color: #605f5f;
+      }
+
+      .btns {
+        text-align: center;
+
+        .btn {
+          display: inline-block;
+          margin: 0 2.5%;
+          border: 1px solid #d1434a;
+          width: 45%;
+          min-width: 80px;
+          height: 40px;
+          font-size: 14px;
+          font-weight: 700;
+          text-align: center;
+          line-height: 40px;
+          letter-spacing: .25em;
+          color: #d1434a;
+
+          &:hover {
+            background-color: #ffe5e6;
+          }
+        }
       }
     }
   }

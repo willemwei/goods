@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const Goods = require('../models/goods');
 const User = require('../models/users');
-const base = require('../public/javascripts/base');
+const Common = require('../public/javascripts/common');
 
 // 连接数据库
 mongoose.connect('mongodb://127.0.0.1:27017/db_demo');
@@ -37,15 +37,11 @@ router.post('/', function (req, res, next) {
 
   goodsModel.exec((err, doc) => {
     if (err) {
-      base.errData(res, err.message);
+      Common.resInfo(res, 1, err.messgae, '');
     } else {
-      res.json({
-        status: '0',
-        msg: '',
-        result: {
-          count: doc.length,
-          list: doc
-        }
+      Common.resInfo(res, 0, '', {
+        count: doc.length,
+        list: doc
       });
     }
   });
@@ -58,11 +54,11 @@ router.post('/addCar', (req, res, next) => {
 
   User.findOne({userId}, (err, userDoc) => {
     if (err) {
-      base.errData(res, err);
+      Common.resInfo(res, 1, err.messgae, '');
     } else {
       Goods.findOne({productId}, (err, productDoc) => {
         if (err || !productDoc) {
-          base.errData(res, err ? err.message : '数据不存在');
+          Common.resInfo(res, 1, err ? err.message : '数据不存在', '');
         } else {
           let exist = false;
           userDoc.cartList.forEach((item, index) => {
@@ -80,12 +76,10 @@ router.post('/addCar', (req, res, next) => {
 
           userDoc.save((err, saveDoc) => {
             if (err) {
-              base.errData(res, err.message);
+              Common.resInfo(res, 1, err.messgae, '');
             } else {
-              res.json({
-                status: 0,
-                msg: '',
-                result: true
+              Common.resInfo(res, 0, '', {
+                list: userDoc.cartList
               });
             }
           })
@@ -102,14 +96,10 @@ router.post('/getGoods', (req, res, next) => {
 
   User.findOne({userId}, (err, doc) => {
     if (err || !doc) {
-      base.errData(res, err ? err.message : '暂无数据');
+      Common.resInfo(res, 1, err ? err.message : '暂无数据', '');
     } else {
-      res.json({
-        status: 0,
-        msg: '',
-        result: {
-          list: doc.cartList
-        }
+      Common.resInfo(res, 0, '', {
+        list: doc.cartList
       });
     }
   });
@@ -128,13 +118,9 @@ router.post('/delCart', (req, res, next) => {
     }
   }, (err, doc) => {
     if (err) {
-      base.errData(res, err.message);
+      Common.resInfo(res, 1, err.message, '');
     } else {
-      res.json({
-        status: 0,
-        msg: '',
-        result: ''
-      });
+      Common.resInfo(res, 0, '', '');
     }
   });
 });
@@ -142,20 +128,18 @@ router.post('/delCart', (req, res, next) => {
 // 更改购物车数据
 router.post('/setCart', (req, res, next) => {
   let userId = req.body.userId;
-  let productId = req.body.productId === 'defined' ? '' : req.body.productId;
-  let allChecked = req.body.allChecked === 'defined' ? '' : req.body.allChecked;
+  let productId = req.body.productId === undefined ? '' : req.body.productId;
+  let allChecked = req.body.allChecked === undefined ? '' : req.body.allChecked;
   let params = req.body.params;
 
   User.findOne({userId}, (err, userDoc) => {
     if (err || !userDoc) {
-      base.errData(res, err ? err.message : '数据不存在');
+      Common.resInfo(res, 1, err ? err.message : '数据不存在', '');
     } else {
       userDoc.cartList.forEach((item) => {
-        if (productId !== '') {
-          if (item.productId === productId) {
-            for (let key in params) {
-              item[key] = params[key];
-            }
+        if (productId !== '' && item.productId === productId) {
+          for (let key in params) {
+            item[key] = params[key];
           }
         }
 
@@ -166,14 +150,10 @@ router.post('/setCart', (req, res, next) => {
 
       userDoc.save((err, doc) => {
         if (err || !doc) {
-          base.errData(res, err ? err.message : '操作失败');
+          Common.resInfo(res, 1, err ? err.message : '数据不存在', '');
         } else {
-          res.json({
-            status: 0,
-            msg: '',
-            result: {
-              list: doc.cartList
-            }
+          Common.resInfo(res, 1, '', {
+            list: doc.cartList
           });
         }
       });

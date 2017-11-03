@@ -10,7 +10,7 @@
         <div class="text">单价</div>
         <div class="text">操作项</div>
       </li>
-      <li class="item" v-for="item in goods">
+      <li class="item" v-for="item in cartList">
         <div class="text">
           <span class="radio-group" :class="{'active': item.checked}" @click="setChecked(item)"></span>
           <img class="pic" :src="'/static/images/' + item.productImage" width="78" height="78">
@@ -34,46 +34,36 @@
       <div class="price-total">
         <span class="text">总价：</span>
         <span class="price">￥{{ totalPrice.toFixed(2) }}</span>
-        <div class="btn" :class="{'active': totalPrice}">提交订单</div>
+        <div class="btn" :class="{'active': totalPrice}" @click="placeOrder">提交订单</div>
       </div>
     </div>
-    <v-modal ref="delete" class="delete">
-      <div class="desc" slot="content">
-        <i class="icon-check"></i>
-        <span class="text">确定要删除吗？</span>
-      </div>
-      <div class="btns" slot="footer">
-        <a class="btn btn-goon" href="#" @click.prevent="deleteOk">确认</a>
-        <a class="btn btn-shopcar" href="#" @click.prevent="deleteCancel">取消</a>
-      </div>
-    </v-modal>
+    <v-confirm ref="delete" @leftClick="deleteCancel" @rightClick="deleteOk"></v-confirm>
   </div>
 </template>
 
 <script type="text/ecmascript-6">
   import Crumbs from '@/base/crumbs/crumbs';
   import CartControl from '@/base/cart-control/cart-control';
-  import Modal from '@/base/modal/modal';
+  import Confirm from '@/base/confirm/confirm';
   import Axios from 'axios';
   import Vue from 'vue';
-  import { mapGetters } from 'vuex';
+  import { mapGetters, mapMutations, mapActions } from 'vuex';
 
   export default {
     components: {
       'v-crumbs': Crumbs,
       'v-cart-control': CartControl,
-      'v-modal': Modal
+      'v-confirm': Confirm
     },
     data () {
       return {
-        goods: [],
         delGoods: {}
       };
     },
     computed: {
       totalPrice () {
         let result = 0;
-        this.goods.forEach((item) => {
+        this.cartList.forEach((item) => {
           if (item.productNum && item.salePrice && item.checked) {
             result += item.productNum * item.salePrice;
           }
@@ -82,8 +72,9 @@
         return result;
       },
       totalChecked () {
-        let result = true;
-        this.goods.forEach((item) => {
+        let result = this.cartList.length !== 0;
+
+        this.cartList.forEach((item) => {
           if (!item.checked) {
             result = false;
           }
@@ -92,7 +83,8 @@
         return result;
       },
       ...mapGetters([
-        'user'
+        'user',
+        'cartList'
       ])
     },
     methods: {
@@ -101,20 +93,29 @@
         this.$refs.delete.show();
       },
       deleteOk () {
+        this.$refs.delete.hide();
+
         if (this.deleteItem) {
           Axios.post('/apis/goods/delCart', {
             'userId': this.user.userId,
             'productId': this.delGoods.productId
           }).then((res) => {
+            let msg = res.msg;
             res = res.data;
+
             if (res.status === 0) {
-              this.goods.forEach((item, index) => {
+              msg = '删除成功';
+              this.cartList.forEach((item, index) => {
                 if (item.productId === this.delGoods.productId) {
-                  this.goods.splice(index, 1);
+                  this.spliceCartList({index});
                 }
               });
             }
-            this.$refs.delete.hide();
+
+            this.setAlert({
+              show: true,
+              msg
+            });
           });
         }
       },
@@ -132,18 +133,22 @@
         }).then((res) => {
           res = res.data;
           if (res.status === 0) {
-            this.goods = res.result.list;
+            this.setCartList(res.result.list);
           }
         });
       },
       allChecked () {
+        if (this.cartList.length === 0) {
+          return;
+        }
+
         Axios.post('/apis/goods/setCart', {
           userId: this.user.userId,
           allChecked: !this.totalChecked
         }).then((res) => {
           res = res.data;
           if (res.status === 0) {
-            this.goods = res.result.list;
+            this.setCartList(res.result.list);
           }
         });
       },
@@ -157,9 +162,14 @@
         }).then((res) => {
           res = res.data;
           if (res.status === 0) {
-            this.goods = res.result.list;
+            this.setCartList(res.result.list);
           }
         });
+      },
+      placeOrder () {
+        if (this.totalPrice) {
+          this.$router.push('/address');
+        }
       },
       _getGoods () {
         setTimeout(() => {
@@ -167,11 +177,18 @@
             userId: this.user.userId
           }).then((res) => {
             if (res.data.status === 0) {
-              this.goods = res.data.result.list;
+              this.setCartList(res.data.result.list);
             }
           });
         }, 0);
-      }
+      },
+      ...mapMutations({
+        'setCartList': 'SET_CART_LIST',
+        'setAlert': 'SET_ALERT'
+      }),
+      ...mapActions([
+        'spliceCartList'
+      ])
     },
     created () {
       if (!this.user) {
@@ -324,6 +341,7 @@
           vertical-align: top;
           color: #605f5f;
           cursor: pointer;
+          user-select: none;
         }
       }
 
@@ -358,6 +376,8 @@
           letter-spacing: .25em;
           color: #fff;
           background-color: #ccc;
+          cursor: not-allowed;
+          user-select: none;
 
           &.active {
             cursor: pointer;
