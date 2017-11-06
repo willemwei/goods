@@ -159,4 +159,32 @@ router.post('/editAddress', (req, res, next) => {
   });
 });
 
+// 检测是否地址是否存在
+router.post('/existAddr', (req, res, next) => {
+  let userId = req.body.userId;
+  let addressId = req.body.addressId;
+
+  User.findOne({userId}, (err, userDoc) => {
+    if (err || !userDoc) {
+      Common.resInfo(res, 1, err ? err.message : '数据不存在', '');
+    } else {
+      let addr;
+
+      userDoc.addressList.forEach((item) => {
+        if (item.addressId === addressId) {
+          addr = item;
+        }
+      });
+
+      if (addr) {
+        Common.resInfo(res, 0, '', {
+          addressInfo: addr
+        });
+      } else {
+        Common.resInfo(res, 1, '数据不存在', '');
+      }
+    }
+  });
+});
+
 module.exports = router;

@@ -15,6 +15,13 @@ const mutations = {
   },
   [types.SET_ALERT] (state, alert) {
     state.alert = alert;
+  },
+  [types.SET_ORDER_PREVIEW] (state, {totalPrice = 0, addressInfo = {}, goodsList = []}) {
+    state.orderPreview = {
+      totalPrice: totalPrice,
+      addressInfo,
+      goodsList
+    };
   }
 };
 

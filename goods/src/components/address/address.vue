@@ -12,7 +12,7 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import {mapGetters} from 'vuex';
+  import { mapGetters } from 'vuex';
   import Crumbs from '@/base/crumbs/crumbs';
 
   export default {
@@ -25,10 +25,28 @@
         'orderProcess'
       ])
     },
-    mounted() {
+    mounted () {
+      let pushAddr = '/address';
+
       if (!this.user) {
         this.$router.push('/');
       }
+
+      switch (this.orderProcess) {
+        case 1:
+          pushAddr = '/address/preview';
+          break;
+        case 2:
+          pushAddr = '/address/success';
+          break;
+        case 3:
+          pushAddr = '/address/success';
+          break;
+        default:
+          pushAddr = '/address';
+      }
+
+      this.$router.push(pushAddr);
     }
   };
 </script>

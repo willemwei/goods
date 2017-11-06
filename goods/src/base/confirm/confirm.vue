@@ -53,6 +53,8 @@
 </script>
 
 <style lang="less" scoped>
+  @import url("../../common/style/basic.less");
+
   .confirm-wrapper {
     .confirm {
       .desc {
@@ -66,19 +68,7 @@
         font-size: 0;
 
         .btn {
-          display: inline-block;
-          margin: 0 2.5%;
-          border: 1px solid #d1434a;
-          width: 45%;
-          min-width: 80px;
-          height: 40px;
-          font-size: 14px;
-          font-weight: 700;
-          text-align: center;
-          line-height: 40px;
-          letter-spacing: .25em;
-          color: #d1434a;
-          box-sizing: border-box;
+          .btn();
 
           &.btn-goon:hover {
             background-color: #ffe5e6;

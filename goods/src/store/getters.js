@@ -17,3 +17,7 @@ export const addressList = (state) => {
 export const alert = (state) => {
   return state.alert;
 };
+
+export const orderPreview = (state) => {
+  return state.orderPreview;
+};

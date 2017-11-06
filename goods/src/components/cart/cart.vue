@@ -2,30 +2,8 @@
   <div class="cart">
     <v-crumbs>我的购物车</v-crumbs>
     <h2 class="title w1260">我的购物车</h2>
-    <ul class="cart-list w1260">
-      <li class="header">
-        <div class="text">商品名</div>
-        <div class="text">价格</div>
-        <div class="text">数量</div>
-        <div class="text">单价</div>
-        <div class="text">操作项</div>
-      </li>
-      <li class="item" v-for="item in cartList">
-        <div class="text">
-          <span class="radio-group" :class="{'active': item.checked}" @click="setChecked(item)"></span>
-          <img class="pic" :src="'/static/images/' + item.productImage" width="78" height="78">
-          <span class="name">{{ item.productName }}</span>
-        </div>
-        <div class="text">￥{{ (item.salePrice * 1).toFixed(2) }}</div>
-        <div class="text">
-          <v-cart-control :goods="item" @countEdit="countEdit(item)"></v-cart-control>
-        </div>
-        <div class="text price">￥{{ (item.productNum * item.salePrice).toFixed(2) }}</div>
-        <div class="text">
-          <i class="icon-delete" @click="deleteItem(item)"></i>
-        </div>
-      </li>
-    </ul>
+    <v-goods-list :cartList="cartList" @setChecked="setChecked" @countEdit="countEdit"
+                  @deleteItem="deleteItem"></v-goods-list>
     <div class="total w1260">
       <div class="all-selected" @click="allChecked">
         <span class="radio-group" :class="{'active': totalChecked}"></span>
@@ -43,8 +21,8 @@
 
 <script type="text/ecmascript-6">
   import Crumbs from '@/base/crumbs/crumbs';
-  import CartControl from '@/base/cart-control/cart-control';
   import Confirm from '@/base/confirm/confirm';
+  import GoodsList from '@/base/goods-list/goods-list';
   import Axios from 'axios';
   import Vue from 'vue';
   import { mapGetters, mapMutations, mapActions } from 'vuex';
@@ -52,8 +30,8 @@
   export default {
     components: {
       'v-crumbs': Crumbs,
-      'v-cart-control': CartControl,
-      'v-confirm': Confirm
+      'v-confirm': Confirm,
+      'v-goods-list': GoodsList
     },
     data () {
       return {
@@ -169,6 +147,7 @@
       placeOrder () {
         if (this.totalPrice) {
           this.$router.push('/address');
+          this.setOrderProcess(0);
         }
       },
       _getGoods () {
@@ -184,7 +163,8 @@
       },
       ...mapMutations({
         'setCartList': 'SET_CART_LIST',
-        'setAlert': 'SET_ALERT'
+        'setAlert': 'SET_ALERT',
+        'setOrderProcess': 'SET_ORDER_PROCESS'
       }),
       ...mapActions([
         'spliceCartList'
@@ -208,71 +188,6 @@
       font-size: 22px;
       letter-spacing: .25em;
       color: #333;
-    }
-
-    .cart-list {
-      display: table;
-      border: solid #e9e9e9;
-      border-width: 0 1px;
-
-      .header {
-        display: table-row;
-
-        .text {
-          display: table-cell;
-          padding: 0 10px;
-          height: 40px;
-          font-size: 14px;
-          text-align: center;
-          line-height: 40px;
-          letter-spacing: .25em;
-          color: #fff;
-          background: #605f5f;
-        }
-      }
-
-      .item {
-        display: table-row;
-        border-bottom: 1px solid #e9e9e9;
-        background-color: #fff;
-
-        .text {
-          display: table-cell;
-          border-bottom: 1px solid #e9e9e9;
-          padding: 32px 0;
-          text-align: center;
-
-          &:first-child {
-            display: flex;
-            align-items: center;
-            text-align: left;
-          }
-
-          .pic {
-            margin-left: 20px;
-            border: 1px solid #e9e9e9;
-          }
-
-          .name {
-            margin-left: 20px;
-            font-size: 14px;
-            letter-spacing: 0;
-            color: #605f5f;
-          }
-
-          .icon-delete {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            background: url(~"./icon-delete.png");
-            cursor: pointer;
-
-            &:hover {
-              background: url(~"./icon-delete-active.png");
-            }
-          }
-        }
-      }
     }
 
     .radio-group {

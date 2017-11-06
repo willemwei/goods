@@ -152,7 +152,7 @@ router.post('/setCart', (req, res, next) => {
         if (err || !doc) {
           Common.resInfo(res, 1, err ? err.message : '数据不存在', '');
         } else {
-          Common.resInfo(res, 1, '', {
+          Common.resInfo(res, 0, '', {
             list: doc.cartList
           });
         }
