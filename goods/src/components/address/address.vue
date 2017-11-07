@@ -1,6 +1,6 @@
 <template>
   <div class="address">
-    <v-crumbs>选择地址</v-crumbs>
+    <v-crumbs>{{ orderTitle }}</v-crumbs>
     <ul class="process w1260">
       <li class="item" :class="{active: orderProcess >= 0}">选择地址</li>
       <li class="item" :class="{active: orderProcess >= 1}">预览订单</li>
@@ -20,6 +20,27 @@
       'v-crumbs': Crumbs
     },
     computed: {
+      orderTitle () {
+        let title = '';
+        switch (this.orderProcess) {
+          case 0:
+            title = '选择地址';
+            break;
+          case 1:
+            title = '预览订单';
+            break;
+          case 2:
+            title = '支付费用';
+            break;
+          case 3:
+            title = '下单成功';
+            break;
+          default:
+            title = '选择地址';
+        }
+
+        return title;
+      },
       ...mapGetters([
         'user',
         'orderProcess'

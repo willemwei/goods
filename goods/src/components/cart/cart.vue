@@ -11,7 +11,7 @@
       </div>
       <div class="price-total">
         <span class="text">总价：</span>
-        <span class="price">￥{{ totalPrice.toFixed(2) }}</span>
+        <span class="price">￥{{ formatM(totalPrice) }}</span>
         <div class="btn" :class="{'active': totalPrice}" @click="placeOrder">提交订单</div>
       </div>
     </div>
@@ -26,6 +26,7 @@
   import Axios from 'axios';
   import Vue from 'vue';
   import { mapGetters, mapMutations, mapActions } from 'vuex';
+  import { formatMoney } from '@/common/js/format';
 
   export default {
     components: {
@@ -149,6 +150,9 @@
           this.$router.push('/address');
           this.setOrderProcess(0);
         }
+      },
+      formatM(num) {
+        return formatMoney(num);
       },
       _getGoods () {
         setTimeout(() => {

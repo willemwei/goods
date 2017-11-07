@@ -39,7 +39,7 @@
       </ul>
     </div>
     <div class="op-wrapper">
-      <a href="#" @click.prevent="toPreview" class="btn">下一步</a>
+      <a href="#" @click.prevent="toPreview" class="btn">预览订单</a>
     </div>
     <v-confirm ref="delete" @leftClick="confirmCancel" @rightClick="confirmDel"></v-confirm>
   </div>
@@ -172,7 +172,7 @@
             this.addressId = item.addressId;
           }
         });
-      }, 0);
+      }, 20);
     }
   };
 </script>
@@ -348,8 +348,8 @@
         .btn();
         float: right;
         margin: 0;
-        width: 200px;
-        transition: all .3s;
+        padding: 0 35px;
+        width: auto;
         background-color: #d1434a;
         color: #fff;
 

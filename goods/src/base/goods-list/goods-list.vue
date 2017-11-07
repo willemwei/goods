@@ -2,9 +2,9 @@
   <transition-group class="cart-list w1260" tag="ul" name="list">
     <li class="header" key="header">
       <div class="text">商品名</div>
-      <div class="text">价格</div>
-      <div class="text">数量</div>
       <div class="text">单价</div>
+      <div class="text">数量</div>
+      <div class="text">价格</div>
       <div class="text" v-if="op">操作项</div>
     </li>
     <li class="item" v-for="item in cartList" :key="item.productId">
@@ -13,12 +13,12 @@
         <img class="pic" :src="'/static/images/' + item.productImage" width="78" height="78">
         <span class="name">{{ item.productName }}</span>
       </div>
-      <div class="text">￥{{ (item.salePrice * 1).toFixed(2) }}</div>
+      <div class="text">￥{{ formatM(item.salePrice * 1) }}</div>
       <div class="text">
         <v-cart-control :goods="item" @countEdit="countEdit(item)" v-if="control"></v-cart-control>
         <span v-else class="num">×{{ item.productNum }}</span>
       </div>
-      <div class="text price">￥{{ (item.productNum * item.salePrice).toFixed(2) }}</div>
+      <div class="text price">￥{{ formatM(item.productNum * item.salePrice) }}</div>
       <div class="text" v-if="op">
         <i class="icon-delete" @click="deleteItem(item)"></i>
       </div>
@@ -28,6 +28,7 @@
 
 <script type="text/ecmascript-6">
   import CartControl from '@/base/cart-control/cart-control';
+  import { formatMoney } from '@/common/js/format';
 
   export default {
     props: {
@@ -59,6 +60,9 @@
       },
       deleteItem (item) {
         this.$emit('deleteItem', item);
+      },
+      formatM(num) {
+        return formatMoney(num);
       }
     }
   };

@@ -178,11 +178,41 @@ router.post('/existAddr', (req, res, next) => {
 
       if (addr) {
         Common.resInfo(res, 0, '', {
-          addressInfo: addr
+          addressInfo: addr,
+          cartList: userDoc.cartList
         });
       } else {
         Common.resInfo(res, 1, '数据不存在', '');
       }
+    }
+  });
+});
+
+// 添加订单
+router.post('/addOrder', (req, res, next) => {
+  let userId = req.body.userId;
+  let params = req.body.params;
+  let orderId = new Date().getTime().toString();
+  let randomNum = Math.ceil(Math.random() * 9000 + 1000);
+
+  params.createDate = new Date().toLocaleString();
+  params.orderId = orderId + randomNum;
+  params.orderStatus = 1;
+
+  User.findOne({userId}, (err, userDoc) => {
+    if (err || !userDoc) {
+      Common.resInfo(res, 1, err ? err.message : '数据不存在', '');
+    } else {
+      userDoc.orderList.push(params);
+      userDoc.save((err) => {
+        if (err) {
+          Common.resInfo(res, 1, err.message, '');
+        } else {
+          Common.resInfo(res, 0, '', {
+            orderId: params.orderId
+          });
+        }
+      });
     }
   });
 });

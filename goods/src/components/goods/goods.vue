@@ -24,7 +24,7 @@
               <img width="231" height="231" border="0" v-lazy="'/static/images/'+item.productImage">
             </a>
             <b class="name">{{ item.productName }}</b>
-            <span class="price">￥ {{ (item.salePrice * 1).toFixed(2) }}</span>
+            <span class="price">￥ {{ formatM(item.salePrice * 1) }}</span>
             <a class="add-car" href="#" @click.prevent="shopCar(item.productId)">加入购物车</a>
           </li>
         </ul>
@@ -45,10 +45,11 @@
 </template>
 
 <script type="text/ecmascript-6">
-  import Brumbs from '@/base/crumbs/crumbs';
-  import Confirm from '@/base/confirm/confirm';
   import axios from 'axios';
   import { mapGetters, mapMutations } from 'vuex';
+  import Brumbs from '@/base/crumbs/crumbs';
+  import Confirm from '@/base/confirm/confirm';
+  import { formatMoney } from '@/common/js/format';
 
   const SORT_DEFAULT = 0;
   const SELECT_ALL = -1;
@@ -133,6 +134,9 @@
           this.page++;
           this._getGoodsList(true);
         }, 500);
+      },
+      formatM (num) {
+        return formatMoney(num);
       },
       _getGoodsList (isPush, pageSet) {
         let params = {
