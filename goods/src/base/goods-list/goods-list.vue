@@ -187,5 +187,62 @@
         }
       }
     }
+
+    @media screen and (max-width: 767px) {
+      border: 0;
+
+      .header {
+        display: none;
+      }
+
+      .item {
+        display: block;
+        position: relative;
+        margin-bottom: 10px;
+        border-top: 1px solid #e9e9e9;
+        border-bottom: 0;
+
+        .text {
+          padding: 8px 0;
+
+          &:first-child {
+            padding: 15px 0;
+          }
+
+          &:nth-of-type(2) {
+            display: none;
+          }
+
+          &:nth-of-type(3) {
+            padding-left: 8px;
+          }
+
+          .radio-group {
+            margin-left: 8px;
+          }
+
+          .pic {
+            margin-left: 8px;
+          }
+
+          .name {
+            font-weight: 700;
+          }
+
+          .icon-delete {
+            position: absolute;
+            top: 43px;
+            right: 10px;
+          }
+
+          &.price {
+            padding-right: 10px;
+            width: 100%;
+            text-align: right;
+            color: #d1434a;
+          }
+        }
+      }
+    }
   }
 </style>

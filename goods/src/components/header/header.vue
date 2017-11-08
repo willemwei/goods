@@ -180,7 +180,7 @@
 
     .log-container {
       float: right;
-      padding: 22px 0;
+      padding: 24px 0 0;
       font-size: 0;
       color: #666;
 
@@ -205,6 +205,10 @@
         background-image: url(~'./icon-shopcar.png');
         -webkit-background-size: cover;
         background-size: cover;
+
+        @media screen and (max-width: 1259px) {
+          margin-right: 20px;
+        }
 
         .num {
           position: absolute;

@@ -25,6 +25,10 @@
       font-size: 14px;
       color: #999;
 
+      @media screen and (max-width: 1260px) {
+        padding-left: 10px;
+      }
+
       &:hover {
         color: #d1434a;
       }

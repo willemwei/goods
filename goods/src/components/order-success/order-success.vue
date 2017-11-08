@@ -93,5 +93,14 @@
         }
       }
     }
+
+    @media screen and (max-width: 767px) {
+      .orderInfo {
+        span {
+          display: block;
+          margin: 10px 0;
+        }
+      }
+    }
   }
 </style>

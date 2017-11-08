@@ -192,5 +192,34 @@
         }
       }
     }
+
+    @media screen and (max-width: 767px) {
+      .title {
+        padding: 16px 0;
+        font-size: 15px;
+        text-align: center;
+      }
+
+      .expense {
+        margin-top: 20px;
+
+        .item {
+          height: 20px;
+
+          .key {
+            font-size: 13px;
+          }
+
+          .val {
+            font-size: 13px;
+          }
+        }
+      }
+
+      .btns {
+        margin: 20px 0;
+        padding: 0 10px;
+      }
+    }
   }
 </style>

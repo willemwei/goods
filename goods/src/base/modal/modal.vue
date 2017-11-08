@@ -70,12 +70,18 @@
       border-radius: 10px;
       padding: 20px 50px 40px;
       width: 500px;
+      max-width: 90%;
       height: 270px;
       background-color: #fff;
       transform: translate3d(-50%, -50%, 0);
       box-shadow: 0 0 5px rgba(0, 0, 0, .3);
       box-sizing: border-box;
       transition: all .3s ease-out;
+
+      @media screen and (max-width: 767px) {
+        padding: 20px;
+        height: auto;
+      }
 
       .title {
         display: block;

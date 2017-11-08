@@ -358,5 +358,25 @@
         }
       }
     }
+
+    @media screen and (max-width: 767px) {
+      padding: 0 10px;
+      box-sizing: border-box;
+
+      .section {
+        .title {
+          padding: 16px 0;
+          font-size: 15px;
+          text-align: center;
+        }
+
+        .address-list {
+          .item {
+            margin: 0 auto 10px;
+            width: 100%;
+          }
+        }
+      }
+    }
   }
 </style>

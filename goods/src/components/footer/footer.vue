@@ -22,5 +22,11 @@
       font-size: 14px;
       color: #ada9a5;
     }
+
+    @media screen and (max-width: 767px) {
+      padding: 10px 0;
+      height: auto;
+      line-height: 25px;
+    }
   }
 </style>

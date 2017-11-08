@@ -354,5 +354,52 @@
         }
       }
     }
+
+    @media screen and (max-width: 1060px) {
+      .title {
+        padding-left: 10px;
+      }
+    }
+
+    @media screen and (max-width: 767px) {
+      .title {
+        padding: 16px 0;
+        font-size: 15px;
+        text-align: center;
+      }
+
+      .total {
+        margin: 20px 0 0;
+        height: 47px;
+        background-color: #fff;
+
+        .all-selected {
+          .radio-group {
+            margin-left: 8px;
+          }
+
+          .text {
+            display: none;
+          }
+        }
+
+        .price-total {
+          .text {
+            display: none;
+          }
+
+          .price {
+            margin-right: 5px;
+            font-size: 16px;
+          }
+
+          .btn {
+            margin-top: -1px;
+            height: 50px;
+            line-height: 50px;
+          }
+        }
+      }
+    }
   }
 </style>

@@ -7,7 +7,7 @@
       <li class="item" :class="{active: orderProcess >= 2}">支付费用</li>
       <li class="item" :class="{active: orderProcess >= 3}">下单成功</li>
     </ul>
-    <router-view class="w1260"></router-view>
+    <router-view class="w1260 content"></router-view>
   </div>
 </template>
 
@@ -111,6 +111,12 @@
             background-color: #d1434a;
           }
         }
+      }
+    }
+
+    @media screen and (max-width: 767px) {
+      .process {
+        display: none;
       }
     }
   }

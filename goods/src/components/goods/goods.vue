@@ -3,7 +3,7 @@
     <v-brumbs>商品</v-brumbs>
     <div class="w1260">
       <div class="sort-wrapper">
-        <span>排序方式：</span>
+        <span class="type">排序方式：</span>
         <a href="#" @click.prevent="sortCh(0)" :class="{'active': sortType === 0}">默认排序</a>
         <a href="#" @click.prevent="sortCh(sortType === 0 ? 1 : sortType === 1 ? -1 : 1)"
            :class="{'active': sortType !== 0, 'desc-bottom': sortType === -1}">
@@ -20,8 +20,8 @@
         </dl>
         <ul class="goods-list">
           <li class="item" v-for="(item, index) in goods" :key="index">
-            <a href="#" @click.prevent="">
-              <img width="231" height="231" border="0" v-lazy="'/static/images/'+item.productImage">
+            <a href="#" @click.prevent="" class="image">
+              <img border="0" v-lazy="'/static/images/'+item.productImage">
             </a>
             <b class="name">{{ item.productName }}</b>
             <span class="price">￥ {{ formatM(item.salePrice * 1) }}</span>
@@ -196,6 +196,10 @@
     .w1260 {
       padding-top: 60px;
 
+      @media screen and (max-width: 767px) {
+        padding-top: 20px;
+      }
+
       .sort-wrapper {
         padding-right: 50px;
         height: 55px;
@@ -203,6 +207,15 @@
         text-align: right;
         line-height: 55px;
         background-color: #fff;
+
+        @media screen and (max-width: 767px) {
+          padding-left: 10px;
+          text-align: left;
+
+          & > span {
+            display: none;
+          }
+        }
 
         & > span {
           font-size: 14px;
@@ -250,9 +263,9 @@
         padding-top: 30px;
 
         .price-list {
-          flex: 0 0 230px;
+          flex: 0 0 230 / 1260 * 100%;
           padding: 0 20px;
-          width: 230px;
+          width: 230 / 1260 * 100%;
           font-size: 14px;
           color: #605f5f;
 
@@ -284,18 +297,28 @@
 
           .item {
             display: inline-block;
-            margin-bottom: 15px;
-            margin-left: 15px;
+            margin-bottom: 1.5%;
+            margin-left: 1.5%;
             border: 2px solid #e9e9e9;
-            width: 235px;
-            height: 400px;
+            width: 23.875%;
             font-size: 16px;
             background-color: #fff;
             box-sizing: border-box;
             transition: all .5s ease-out;
 
-            &:nth-of-type(4n + 1) {
-              margin-left: 0;
+            .image {
+              display: block;
+              position: relative;
+              width: 100%;
+              padding-top: 100%;
+
+              img {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+              }
             }
 
             &:hover {
@@ -307,7 +330,7 @@
             .name {
               display: block;
               overflow: hidden;
-              margin: 20px 10px 0;
+              margin: 20 / 236 * 100% 10 / 236 * 100% 0;
               height: 4em;
               font-size: 14px;
               color: #605f5f;
@@ -315,7 +338,7 @@
 
             .price {
               display: block;
-              margin: 0 10px;
+              margin: 0 10 / 236 * 100%;
               font-size: 17px;
               color: #d1434a;
             }
@@ -323,7 +346,7 @@
             .add-car {
               display: block;
               border: 1px solid #d1434a;
-              margin: 15px 10px 0;
+              margin: 15 / 236 * 100% 10 / 236 * 100%;
               height: 40px;
               font-weight: 700;
               text-align: center;
@@ -368,6 +391,82 @@
             0% {
               transform: rotate(-360deg);
             }
+          }
+        }
+
+        @media screen and (max-width: 990px) {
+          .goods-list {
+            .item {
+              width: 95.5 / 300 * 100%;
+
+              &:nth-of-type(3n + 1) {
+                margin-left: 0;
+              }
+            }
+          }
+        }
+
+        @media screen and (min-width: 991px) {
+          .item:nth-of-type(4n + 1) {
+            margin-left: 0;
+          }
+        }
+
+        @media screen and (max-width: 767px) {
+          padding-top: 15px;
+
+          .price-list {
+            display: none;
+          }
+
+          .goods-list {
+            .item {
+              position: relative;
+              margin-right: 0;
+              margin-left: 0;
+              border-width: 1px 0;
+              padding: 10px;
+              width: 100%;
+
+              &:hover {
+                border-color: #e9e9e9;
+                transform: none;
+                box-shadow: none;
+              }
+
+              .image {
+                float: left;
+                border: 1px solid #e9e9e9;
+                padding: 0;
+                width: 108px;
+                height: 108px;
+              }
+
+              .name {
+                margin: 0 0 0 115px;
+                font-size: 13px;
+              }
+
+              .price {
+                margin: 0 0 0 115px;
+                font-size: 13px;
+              }
+
+              .add-car {
+                position: absolute;
+                right: 10px;
+                bottom: 10px;
+                margin: 0;
+                width: 87px;
+                height: 28px;
+                line-height: 28px;
+                font-size: 12px;
+              }
+            }
+          }
+
+          .loading-more {
+            padding: 0;
           }
         }
       }

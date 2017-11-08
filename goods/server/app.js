@@ -55,6 +55,7 @@ app.use((req, res, next) => {
 
 app.use('/apis/goods', goods);
 app.use('/apis/users', users);
+app.use('/index', index);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
