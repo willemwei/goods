@@ -17,7 +17,7 @@
             <i class="icon-delete" @click="deleteAddr(address)">删除</i>
           </div>
         </li>
-        <li class="item add-new" key="addAddress">
+        <li class="item add-new" key="addAddress" @click="addAddress">
           <i class="icon-add">添加</i>
           <p class="text">点击添加新地址</p>
         </li>
@@ -42,6 +42,21 @@
       <a href="#" @click.prevent="toPreview" class="btn">预览订单</a>
     </div>
     <v-confirm ref="delete" @leftClick="confirmCancel" @rightClick="confirmDel"></v-confirm>
+    <v-modal ref="addaddr" class="add-addr" title="添加地址">
+      <div slot="content">
+        <input class="add-input" type="text" v-model="addA.userName" :class="{'error': click && !addA.userName}"
+               placeholder="请输入姓名：">
+        <input class="add-input" :class="{'error': click && !addA.streetName}" type="text" v-model="addA.streetName"
+               placeholder="请输入地址：">
+        <input class="add-input" :class="{'error': click && !addA.tel}" type="text" v-model="addA.tel"
+               placeholder="请输入手机号：">
+        <input class="add-input" :class="{'error': click && !addA.postCode}" type="text" v-model="addA.postCode"
+               placeholder="请输入邮政编号：">
+      </div>
+      <div slot="footer" class="footer">
+        <a href="#" @click.prevent="addPost" class="btn">添加</a>
+      </div>
+    </v-modal>
   </div>
 </template>
 
@@ -49,6 +64,7 @@
   import Axios from 'axios';
   import { mapGetters, mapMutations } from 'vuex';
   import Confirm from '@/base/confirm/confirm';
+  import Modal from '@/base/modal/modal';
 
   export default {
     data () {
@@ -56,7 +72,14 @@
         delAddr: {},
         msg: '',
         moreAddr: false,
-        addressId: -1
+        addressId: -1,
+        addA: {
+          userName: '',
+          streetName: '',
+          postCode: '',
+          tel: ''
+        },
+        click: false
       };
     },
     computed: {
@@ -155,6 +178,44 @@
 
         this.$router.push(`/address/preview?addressId=${this.addressId}`);
       },
+      addAddress () {
+        this.$refs.addaddr.show();
+      },
+      addPost () {
+        this.click = true;
+
+        for (let item of Object.values(this.addA)) {
+          if (item === '') {
+            return;
+          }
+        }
+
+        Axios.post('apis/users/addAddress', {
+          userId: this.user.userId,
+          address: this.addA
+        }).then((res) => {
+          res = res.data;
+
+          let msg = '';
+          if (res.status === 0) {
+            this.setAddressList(res.result.addressList);
+            msg = '地址添加成功!';
+          } else {
+            msg = '地址添加失败!';
+          }
+
+          for (let key in this.addA) {
+            this.addA[key] = '';
+          }
+
+          this.click = false;
+          this.$refs.addaddr.hide();
+          this.setAlert({
+            msg,
+            show: true
+          });
+        });
+      },
       ...mapMutations({
         setAddressList: 'SET_ADDRESS_LIST',
         setAlert: 'SET_ALERT',
@@ -162,7 +223,8 @@
       })
     },
     components: {
-      'v-confirm': Confirm
+      'v-confirm': Confirm,
+      'v-modal': Modal
     },
     mounted () {
       this.setOrderProcess(0);
@@ -226,7 +288,7 @@
           }
 
           &.add-new {
-            height: 166px;
+            height: 176px;
 
             .icon-add {
               display: block;
@@ -264,6 +326,7 @@
 
           .tel {
             padding-bottom: 10px;
+            height: 24px;
             line-height: 1em;
           }
 
@@ -355,6 +418,65 @@
 
         &:hover {
           background-color: #f16f75;
+        }
+      }
+    }
+
+    .add-addr {
+      .add-input {
+        display: block;
+        margin: 20px auto 0;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        width: 80%;
+        height: 28px;
+        font-size: 14px;
+        line-height: 28px;
+        text-indent: 10px;
+        outline: 0;
+
+        &:focus {
+          box-shadow: 0 0 3px rgba(0, 0, 0, .3);
+        }
+
+        &.error {
+          border: 1px solid #f00;
+          color: #f00;
+          box-shadow: none;
+
+          &::-webkit-input-placeholder {
+            color: #f00;
+          }
+
+          &:-moz-placeholder {
+            color: #f00;
+          }
+
+          &::-moz-placeholder {
+            color: #f00;
+          }
+
+          &:-ms-input-placeholder {
+            color: #f00;
+          }
+        }
+      }
+
+      .footer {
+        .btn {
+          .btn();
+          display: block;
+          margin: 30px auto 0;
+          border-radius: 3px;
+          width: 80%;
+          height: 34px;
+          line-height: 34px;
+          color: #fff;
+          background-color: #d1434a;
+
+          &:hover {
+            opacity: .9;
+          }
         }
       }
     }

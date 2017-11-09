@@ -70,6 +70,11 @@ router.post('/addAddress', (req, res, next) => {
   let userId = req.body.userId;
   let address = req.body.address;
 
+  if (address) {
+    address.isDefault = false;
+    address.addressId = new Date().getTime();
+  }
+
   User.findOne({userId}, (err, userDoc) => {
     if (err || !userDoc) {
       Common.resInfo(res, 1, err ? err.message : '用户不存在', '');

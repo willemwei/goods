@@ -8,16 +8,22 @@
         <a href="#" @click.prevent="sortCh(sortType === 0 ? 1 : sortType === 1 ? -1 : 1)"
            :class="{'active': sortType !== 0, 'desc-bottom': sortType === -1}">
           价格<i class="icon-price"></i></a>
+        <span class="order-price" @click="filterShow=true">价格筛选</span>
       </div>
       <div class="goods-wrapper">
-        <dl class="price-list">
-          <dt class="title">价格区间：</dt>
-          <dd class="item" :class="{'active': priceSelect === -1}" @click="priceRing(-1)">ALL</dd>
-          <dd class="item" v-for="(item, index) in priceFilter" @click="priceRing(index)"
-              :class="{'active': index === priceSelect}">
-            {{ item.start.toFixed(2) }} - {{ item.end.toFixed(2) }}
-          </dd>
-        </dl>
+        <transition name="bg">
+          <div class="bg" @click="filterShow=false" v-show="filterShow"></div>
+        </transition>
+        <transition name="filter">
+          <dl class="price-list" v-show="!isMobile || (isMobile && filterShow)">
+            <dt class="title">价格区间：</dt>
+            <dd class="item" :class="{'active': priceSelect === -1}" @click="priceRing(-1)">ALL</dd>
+            <dd class="item" v-for="(item, index) in priceFilter" @click="priceRing(index)"
+                :class="{'active': index === priceSelect}">
+              {{ item.start.toFixed(2) }} - {{ item.end.toFixed(2) }}
+            </dd>
+          </dl>
+        </transition>
         <ul class="goods-list">
           <li class="item" v-for="(item, index) in goods" :key="index">
             <a href="#" @click.prevent="" class="image">
@@ -80,7 +86,9 @@
         confirmBtns: {
           leftText: '继续购物',
           rightText: '查看购物车'
-        }
+        },
+        filterShow: false,
+        widWidth: 0
       };
     },
     components: {
@@ -89,8 +97,18 @@
     },
     created () {
       this._getGoodsList();
+      window.onresize = () => {
+        this.widWidth = window.innerWidth;
+      };
     },
     computed: {
+      isMobile () {
+        if (this.widWidth === 0) {
+          this.widWidth = window.innerWidth;
+        }
+
+        return this.widWidth <= 767;
+      },
       ...mapGetters([
         'user'
       ])
@@ -104,6 +122,7 @@
         let flag = this.priceSelect === index;
         this.priceSelect = index;
         this._getGoodsList(flag, 1);
+        this.filterShow = false;
       },
       shopCar (productId) {
         axios.post('/apis/goods/addCar', {
@@ -196,10 +215,6 @@
     .w1260 {
       padding-top: 60px;
 
-      @media screen and (max-width: 767px) {
-        padding-top: 20px;
-      }
-
       .sort-wrapper {
         padding-right: 50px;
         height: 55px;
@@ -207,15 +222,6 @@
         text-align: right;
         line-height: 55px;
         background-color: #fff;
-
-        @media screen and (max-width: 767px) {
-          padding-left: 10px;
-          text-align: left;
-
-          & > span {
-            display: none;
-          }
-        }
 
         & > span {
           font-size: 14px;
@@ -255,12 +261,20 @@
             background-size: cover;
           }
         }
+
+        .order-price {
+          display: none;
+        }
       }
 
       .goods-wrapper {
         display: flex;
         flex-wrap: wrap;
         padding-top: 30px;
+
+        .bg {
+          display: none;
+        }
 
         .price-list {
           flex: 0 0 230 / 1260 * 100%;
@@ -332,6 +346,7 @@
               overflow: hidden;
               margin: 20 / 236 * 100% 10 / 236 * 100% 0;
               height: 4em;
+              line-height: 4/3em;
               font-size: 14px;
               color: #605f5f;
             }
@@ -393,8 +408,10 @@
             }
           }
         }
+      }
 
-        @media screen and (max-width: 990px) {
+      @media screen and (max-width: 990px) {
+        .goods-wrapper {
           .goods-list {
             .item {
               width: 95.5 / 300 * 100%;
@@ -405,18 +422,89 @@
             }
           }
         }
+      }
 
-        @media screen and (min-width: 991px) {
+      @media screen and (min-width: 991px) {
+        .goods-wrapper {
           .item:nth-of-type(4n + 1) {
             margin-left: 0;
           }
         }
+      }
 
-        @media screen and (max-width: 767px) {
+      @media screen and (max-width: 767px) {
+        padding-top: 20px;
+
+        .sort-wrapper {
+          padding-left: 15px;
+          padding-right: 15px;
+          text-align: left;
+
+          .type {
+            display: none;
+          }
+
+          .order-price {
+            display: block;
+            float: right;
+          }
+        }
+
+        .goods-wrapper {
           padding-top: 15px;
 
+          .bg {
+            display: block;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 9998;
+            background-color: rgba(0, 0, 0, 0.5);
+            transition: all .5s;
+
+            &.bg-enter,
+            &.bg-leave-to {
+              opacity: 0;
+            }
+          }
+
           .price-list {
-            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            z-index: 9999;
+            margin: 0;
+            padding: 0;
+            width: 60%;
+            height: 100%;
+            background-color: #fff;
+            transition: all .5s;
+
+            &.filter-enter,
+            &.filter-leave-to {
+              transform: translateX(100%);
+            }
+
+            .title {
+              margin: 0;
+              padding-left: 15px;
+              width: 100%;
+              height: 55px;
+              line-height: 55px;
+              background-color: #f0f0f0;
+              box-sizing: border-box;
+            }
+
+            .item {
+              margin: 0;
+              border-bottom: 1px solid #e9e9e9;
+              padding: 12px 10px 12px 15px;
+              width: 100%;
+              background-color: #fff;
+              box-sizing: border-box;
+            }
           }
 
           .goods-list {
